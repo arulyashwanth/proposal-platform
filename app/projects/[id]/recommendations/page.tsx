@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -221,9 +221,9 @@ export default function RecommendationsPage() {
               </TableRow>
               <TableRow>
                 <TableCell className="font-semibold">Est. Door Set Unit Price</TableCell>
-                <TableCell className="font-bold text-slate-800">£2,775</TableCell>
-                <TableCell className="font-bold text-slate-800">£2,380</TableCell>
-                <TableCell className="font-bold text-slate-800">£1,980</TableCell>
+                <TableCell className="font-bold text-slate-800">Ð2,775</TableCell>
+                <TableCell className="font-bold text-slate-800">Ð2,380</TableCell>
+                <TableCell className="font-bold text-slate-800">$1,980</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell className="font-semibold">Selection Action</TableCell>

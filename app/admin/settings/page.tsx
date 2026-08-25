@@ -14,9 +14,9 @@ export default function SettingsPage() {
         <Card>
           <CardHeader><CardTitle>Company Information</CardTitle></CardHeader>
           <CardContent className="space-y-4">
-            <Input label="Company Name" defaultValue="VaultSpec Ltd" id="company-name" />
+            <Input label="Company Name" defaultValue="Artibits Ltd" id="company-name" />
             <Input label="Company Address" defaultValue="12 Innovation Quarter, Birmingham, B1 2AA" id="company-address" />
-            <Input label="Contact Email" defaultValue="proposals@vaultspec.com" id="contact-email" />
+            <Input label="Contact Email" defaultValue="proposals@Artibits.com" id="contact-email" />
             <Input label="Contact Phone" defaultValue="+44 121 555 0100" id="contact-phone" />
           </CardContent>
         </Card>

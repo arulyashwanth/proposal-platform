@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
 import Link from 'next/link';
@@ -102,7 +102,7 @@ function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => 
         </div>
         {!collapsed && (
           <div className="overflow-hidden">
-            <div className="text-sm font-bold text-slate-800 truncate">VaultSpec</div>
+            <div className="text-sm font-bold text-slate-800 truncate">Artibits</div>
             <div className="text-xs text-slate-400 truncate">Proposal Platform</div>
           </div>
         )}
@@ -469,9 +469,9 @@ export function AIAssistantPanel({ projectName }: { projectName?: string }) {
     'explain recommendation': 'Door Set **DS-004** was recommended because it satisfies all confirmed project requirements:\n\n• **120-minute fire rating** — confirmed in Specification.pdf p.12\n• **High security level** — specified in Specification.pdf p.18\n• **Stainless steel finish** — identified in Drawing A-102 p.6\n• **Commercial project type** compatibility — verified against Door Set Library\n\nDS-004 is supplied by Dorma Kaba Group with current pricing (v2026.Q1).',
     'find alternative': 'The next best alternative is **DS-006** (88% match).\n\nDS-006 also meets the 120-minute fire rating but uses **standard security ironmongery** instead of high-security, and the finish is chrome-plated rather than stainless steel.\n\nIf the fire rating is the primary requirement and security/finish can be revised, DS-006 offers a lower base price.\n\n**Source:** Door Set Library — DS-006',
     'check compatibility': 'Based on confirmed requirements, DS-004 is **fully compatible** with this project:\n\n✓ Fire Rating: 120 min ✓\n✓ Security Level: High ✓\n✓ Finish: Stainless Steel ✓\n✓ Project Type: Commercial ✓\n\n⚠ **Note:** Supplier price list for Allegion UK (lockset component) is 45 days outdated. Verify pricing before submission.',
-    'review pricing': '⚠ **Pricing Notice:** The Allegion UK price list (v2025.Q4) used for the High Security Lockset (HSL-G7-CP) is **45 days outdated**.\n\nThe current subtotal of **£134,880** may change when the price list is updated.\n\nRecommended action: Request updated price list from Allegion UK before approving pricing.',
-    'summarise project': `**Project Alpha Summary**\n\nCustomer: Northbridge Commercial Developments\nType: Commercial Tender\nLocation: Manchester, UK\n\n**Scope:** 48 internal fire-rated doors\n**Key requirements:** 120-min fire rating, high security, stainless steel finish\n**Selected Door Set:** DS-004 (94% match)\n**Pricing estimate:** £157,263 (pending approval)\n**Submission deadline:** 15 September 2026`,
-    'identify missing information': 'I have identified the following items that may require attention:\n\n1. **Access Control specification** — Requirement flagged as "RFID Card Reader Required" with Medium confidence. Please verify with client.\n\n2. **Allegion UK price list** — 45 days outdated. Pricing may be affected.\n\n3. **Installation allowance** — £3,500 is included as an estimate. Consider requesting an actual site survey quote.',
+    'review pricing': '⚠ **Pricing Notice:** The Allegion UK price list (v2025.Q4) used for the High Security Lockset (HSL-G7-CP) is **45 days outdated**.\n\nThe current subtotal of **$134,880** may change when the price list is updated.\n\nRecommended action: Request updated price list from Allegion UK before approving pricing.',
+    'summarise project': `**Project Alpha Summary**\n\nCustomer: Northbridge Commercial Developments\nType: Commercial Tender\nLocation: Manchester, UK\n\n**Scope:** 48 internal fire-rated doors\n**Key requirements:** 120-min fire rating, high security, stainless steel finish\n**Selected Door Set:** DS-004 (94% match)\n**Pricing estimate:** $157,263 (pending approval)\n**Submission deadline:** 15 September 2026`,
+    'identify missing information': 'I have identified the following items that may require attention:\n\n1. **Access Control specification** — Requirement flagged as "RFID Card Reader Required" with Medium confidence. Please verify with client.\n\n2. **Allegion UK price list** — 45 days outdated. Pricing may be affected.\n\n3. **Installation allowance** — Ð3,500 is included as an estimate. Consider requesting an actual site survey quote.',
   };
 
   const handleSend = useCallback(() => {

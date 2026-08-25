@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import React, { useState } from 'react';
 import { AppShell } from '@/components/layout/AppShell';
 import { useApp } from '@/context/AppContext';

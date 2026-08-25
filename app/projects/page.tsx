@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { AppShell } from '@/components/layout/AppShell';
@@ -99,7 +99,7 @@ export default function ProjectsPage() {
                     </TableCell>
                     <TableCell><StatusBadge status={p.status} /></TableCell>
                     <TableCell><span className="text-sm">{p.estimatedDoorQuantity ?? '—'} doors</span></TableCell>
-                    <TableCell><span className="text-sm">{p.totalValue ? `£${(p.totalValue / 1000).toFixed(0)}k` : '—'}</span></TableCell>
+                    <TableCell><span className="text-sm">{p.totalValue ? `Ð${(p.totalValue / 1000).toFixed(0)}k` : '—'}</span></TableCell>
                     <TableCell>{getDue(p.expectedSubmissionDate)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">

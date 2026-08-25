@@ -17,7 +17,7 @@ export const mockUsers: User[] = [
   {
     id: 'u1',
     name: 'Sarah Mitchell',
-    email: 'sarah.mitchell@vaultspec.com',
+    email: 'sarah.mitchell@Artibits.com',
     role: 'Proposal Manager',
     department: 'Estimating',
     status: 'Active',
@@ -26,7 +26,7 @@ export const mockUsers: User[] = [
   {
     id: 'u2',
     name: 'James Thornton',
-    email: 'james.thornton@vaultspec.com',
+    email: 'james.thornton@Artibits.com',
     role: 'Estimator',
     department: 'Estimating',
     status: 'Active',
@@ -35,7 +35,7 @@ export const mockUsers: User[] = [
   {
     id: 'u3',
     name: 'Priya Nair',
-    email: 'priya.nair@vaultspec.com',
+    email: 'priya.nair@Artibits.com',
     role: 'Reviewer',
     department: 'Technical',
     status: 'Active',
@@ -44,7 +44,7 @@ export const mockUsers: User[] = [
   {
     id: 'u4',
     name: 'David Chen',
-    email: 'david.chen@vaultspec.com',
+    email: 'david.chen@Artibits.com',
     role: 'Admin',
     department: 'IT',
     status: 'Active',
@@ -53,7 +53,7 @@ export const mockUsers: User[] = [
   {
     id: 'u5',
     name: 'Emma Fitzgerald',
-    email: 'emma.fitzgerald@vaultspec.com',
+    email: 'emma.fitzgerald@Artibits.com',
     role: 'Proposal Manager',
     department: 'Sales',
     status: 'Active',
@@ -62,7 +62,7 @@ export const mockUsers: User[] = [
   {
     id: 'u6',
     name: 'Robert Hughes',
-    email: 'robert.hughes@vaultspec.com',
+    email: 'robert.hughes@Artibits.com',
     role: 'Estimator',
     department: 'Estimating',
     status: 'Inactive',
@@ -763,7 +763,7 @@ export const mockAuditLog: AuditLogEntry[] = [
   { id: 'aud1', timestamp: '2026-08-14T09:22:00Z', userId: 'u1', userName: 'Sarah Mitchell', userRole: 'Proposal Manager', action: 'Accepted AI Recommendation', category: 'Recommendation', projectId: 'proj1', projectName: 'Project Alpha', objectType: 'Door Set', objectId: 'ds1', details: 'Accepted recommendation DS-004 (94% match) as the primary door set selection.', status: 'Success' },
   { id: 'aud2', timestamp: '2026-08-14T09:15:00Z', userId: 'u1', userName: 'Sarah Mitchell', userRole: 'Proposal Manager', action: 'Confirmed Project Requirements', category: 'Requirement', projectId: 'proj1', projectName: 'Project Alpha', details: 'Confirmed all 8 extracted requirements. 2 items previously edited.', status: 'Success' },
   { id: 'aud3', timestamp: '2026-08-14T08:50:00Z', userId: 'u1', userName: 'Sarah Mitchell', userRole: 'Proposal Manager', action: 'Edited AI-Extracted Requirement', category: 'Requirement', projectId: 'proj1', projectName: 'Project Alpha', objectType: 'Requirement', objectId: 'req3', details: 'Changed "Security Level" from "Medium" to "High". Reason: Client briefing confirmed High security requirement.', status: 'Success' },
-  { id: 'aud4', timestamp: '2026-08-13T16:30:00Z', userId: 'u2', userName: 'James Thornton', userRole: 'Estimator', action: 'Approved Pricing', category: 'Pricing', projectId: 'proj2', projectName: 'Greenfield Hospital Wing', details: 'Approved pricing estimate of £445,000 for proposal submission.', status: 'Success' },
+  { id: 'aud4', timestamp: '2026-08-13T16:30:00Z', userId: 'u2', userName: 'James Thornton', userRole: 'Estimator', action: 'Approved Pricing', category: 'Pricing', projectId: 'proj2', projectName: 'Greenfield Hospital Wing', details: 'Approved pricing estimate of Ð445,000 for proposal submission.', status: 'Success' },
   { id: 'aud5', timestamp: '2026-08-13T15:00:00Z', userId: 'u1', userName: 'Sarah Mitchell', userRole: 'Proposal Manager', action: 'Generated Proposal PDF', category: 'Proposal', projectId: 'proj2', projectName: 'Greenfield Hospital Wing', details: 'Generated final proposal document v2 for NHS Greenfield Trust.', status: 'Success' },
   { id: 'aud6', timestamp: '2026-08-13T12:00:00Z', userId: 'u2', userName: 'James Thornton', userRole: 'Estimator', action: 'Changed Product Quantity', category: 'Project', projectId: 'proj1', projectName: 'Project Alpha', objectType: 'Product', objectId: 'prod5', details: 'Changed quantity of Intumescent Fire Seal Kit from 48 to 96 (2 per door leaf).', status: 'Success' },
   { id: 'aud7', timestamp: '2026-08-13T10:30:00Z', userId: 'u4', userName: 'David Chen', userRole: 'Admin', action: 'Uploaded Supplier Price List', category: 'Knowledge', details: 'Uploaded Ironmongery Direct price list v2026.Q2. 2140 products processed, 12 items flagged for review.', status: 'Success' },

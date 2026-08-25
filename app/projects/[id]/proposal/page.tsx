@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { useParams } from 'next/navigation';
@@ -19,7 +19,7 @@ export default function ProposalPreparationPage() {
   const [isSubmitted, setIsSubmitted] = useState(project?.status === 'Submitted' || project?.status === 'Approval');
   const [showEditModal, setShowEditModal] = useState(false);
   const [executiveSummary, setExecutiveSummary] = useState(
-    `VaultSpec Ltd is pleased to submit this comprehensive proposal for the ${project?.name || 'Project Alpha'}. This proposal encompasses 48 high-performance commercial fire door assemblies engineered to meet 120-minute fire resistance, high-security ironmongery standards, and stainless steel finishes as requested.`
+    `Artibits Ltd is pleased to submit this comprehensive proposal for the ${project?.name || 'Project Alpha'}. This proposal encompasses 48 high-performance commercial fire door assemblies engineered to meet 120-minute fire resistance, high-security ironmongery standards, and stainless steel finishes as requested.`
   );
 
   if (!project) return null;

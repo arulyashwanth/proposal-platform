@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import React from 'react';
 import { AppShell } from '@/components/layout/AppShell';
 import { useApp } from '@/context/AppContext';
@@ -31,7 +31,7 @@ export default function ProposalsPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-lg font-semibold text-slate-800">Proposals</h2>
-            <p className="text-sm text-slate-500 mt-0.5">{MOCK_PROPOSALS.length} proposals — £{(totalValue/1000).toFixed(0)}k submitted this period</p>
+            <p className="text-sm text-slate-500 mt-0.5">{MOCK_PROPOSALS.length} proposals — ${(totalValue/1000).toFixed(0)}k submitted this period</p>
           </div>
         </div>
         <div className="grid grid-cols-4 gap-4 mb-6">
@@ -68,7 +68,7 @@ export default function ProposalsPage() {
                     <TableCell><span className="text-sm text-slate-600">{p.customer}</span></TableCell>
                     <TableCell><span className="text-xs text-slate-500">v{p.version}</span></TableCell>
                     <TableCell><span className={`inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full border ${cfg.className}`}>{cfg.label}</span></TableCell>
-                    <TableCell><span className="text-sm font-medium">{p.value > 0 ? `£${(p.value).toLocaleString()}` : '—'}</span></TableCell>
+                    <TableCell><span className="text-sm font-medium">{p.value > 0 ? `Ð${(p.value).toLocaleString()}` : '—'}</span></TableCell>
                     <TableCell><span className="text-xs text-slate-400">{formatDate(p.preparedDate)}</span></TableCell>
                     <TableCell><span className="text-xs text-slate-500">{p.preparedBy.split(' ')[0]}</span></TableCell>
                     <TableCell>

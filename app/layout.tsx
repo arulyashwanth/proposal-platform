@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AppProvider } from '@/context/AppContext';
@@ -6,7 +6,7 @@ import { AppProvider } from '@/context/AppContext';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'AI-Assisted Proposal Preparation Platform — VaultSpec',
+  title: 'AI-Assisted Proposal Preparation Platform — Artibits',
   description: 'Internal enterprise platform for AI-assisted project proposal preparation, door set selection, and pricing.',
 };
 

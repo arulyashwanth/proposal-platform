@@ -6,12 +6,12 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCurrency(amount: number, currency = 'GBP'): string {
-  return new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency,
+  const formattedAmount = new Intl.NumberFormat('en-GB', {
+    style: 'decimal',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount);
+  return `Ð${formattedAmount}`;
 }
 
 export function formatFileSize(bytes: number): string {
