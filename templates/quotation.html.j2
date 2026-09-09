@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quotation #{{ quotation_id }} — {{ project_name }}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 13px;
+      color: #1a1a2e;
+      background: #f5f6fa;
+    }
+    .page {
+      max-width: 900px;
+      margin: 30px auto;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+      padding: 48px 56px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 36px;
+      padding-bottom: 24px;
+      border-bottom: 3px solid #0f3460;
+    }
+    .logo-block h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #0f3460;
+      letter-spacing: 1px;
+    }
+    .logo-block .tagline {
+      font-size: 11px;
+      color: #888;
+      margin-top: 2px;
+    }
+    .doc-meta {
+      text-align: right;
+    }
+    .doc-meta .doc-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #e94560;
+    }
+    .doc-meta p {
+      font-size: 12px;
+      color: #555;
+      margin-top: 4px;
+    }
+
+    /* Info Grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .info-card {
+      background: #f8f9ff;
+      border-left: 4px solid #0f3460;
+      padding: 14px 18px;
+      border-radius: 4px;
+    }
+    .info-card .label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #0f3460;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 4px;
+    }
+    .info-card .value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a2e;
+    }
+
+    /* Items Table */
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f3460;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #e0e4f0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 32px;
+    }
+    thead th {
+      background: #0f3460;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    thead th:last-child { text-align: right; }
+    tbody tr:nth-child(even) { background: #f8f9ff; }
+    tbody td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #eef0f8;
+      font-size: 13px;
+      color: #333;
+    }
+    tbody td:last-child { text-align: right; font-weight: 600; }
+    .sku-badge {
+      display: inline-block;
+      background: #e8eaf6;
+      color: #3949ab;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-left: 6px;
+    }
+
+    /* Cost Summary */
+    .summary-grid {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 32px;
+    }
+    .summary-table {
+      width: 320px;
+    }
+    .summary-table tr td {
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+    .summary-table tr td:first-child { color: #555; }
+    .summary-table tr td:last-child { text-align: right; font-weight: 600; }
+    .summary-table .total-row td {
+      background: #0f3460;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 800;
+      border-radius: 4px;
+    }
+
+    /* Notes */
+    .notes-block {
+      background: #fffdf0;
+      border-left: 4px solid #f5a623;
+      padding: 14px 18px;
+      border-radius: 4px;
+      margin-bottom: 32px;
+      font-size: 12px;
+      color: #555;
+      line-height: 1.6;
+    }
+    .notes-block strong { color: #c87700; }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      font-size: 11px;
+      color: #aaa;
+      padding-top: 24px;
+      border-top: 1px solid #e0e4f0;
+    }
+    .footer strong { color: #0f3460; }
+
+    @media print {
+      body { background: white; }
+      .page { box-shadow: none; margin: 0; border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-block">
+      <h1>MEKATRON</h1>
+      <div class="tagline">AI-Assisted Proposal Preparation System &bull; v{{ mekatron_version }}</div>
+    </div>
+    <div class="doc-meta">
+      <div class="doc-title">QUOTATION</div>
+      <p><strong>#{{ quotation_id }}</strong></p>
+      <p>Date: {{ date }}</p>
+    </div>
+  </div>
+
+  <!-- Info Grid -->
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="label">Project</div>
+      <div class="value">{{ project_name }}</div>
+    </div>
+    <div class="info-card">
+      <div class="label">Prepared For</div>
+      <div class="value">{{ client_name }}</div>
+    </div>
+    <div class="info-card">
+      <div class="label">Prepared By</div>
+      <div class="value">{{ prepared_by }}</div>
+    </div>
+    <div class="info-card">
+      <div class="label">Status</div>
+      <div class="value" style="color:#e94560;">Pending Approval</div>
+    </div>
+  </div>
+
+  <!-- Items Table -->
+  <div class="section-title">Line Items</div>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Product</th>
+        <th>Category</th>
+        <th style="text-align:right">Qty</th>
+        <th style="text-align:right">Unit Price</th>
+        <th style="text-align:right">Margin %</th>
+        <th>Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>
+          {{ item.product_name }}
+          {% if item.sku %}<span class="sku-badge">{{ item.sku }}</span>{% endif %}
+        </td>
+        <td>{{ item.category | default('—') }}</td>
+        <td style="text-align:right">{{ item.quantity }}</td>
+        <td style="text-align:right">\${{ "%.2f"|format(item.unit_price | float) }}</td>
+        <td style="text-align:right">{{ "%.1f"|format(item.margin | float) }}%</td>
+        <td>\${{ "%.2f"|format(item.subtotal | float) }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" style="text-align:center;color:#aaa;padding:20px;">No line items added yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Cost Summary -->
+  <div class="summary-grid">
+    <table class="summary-table">
+      <tr>
+        <td>Material Cost</td>
+        <td>\${{ "%.2f"|format(cost_summary.material_cost | float) }}</td>
+      </tr>
+      <tr>
+        <td>Labor</td>
+        <td>\${{ "%.2f"|format(cost_summary.labor | float) }}</td>
+      </tr>
+      <tr>
+        <td>Markup ({{ "%.1f"|format(cost_summary.markup | float) }}%)</td>
+        <td>\${{ "%.2f"|format((cost_summary.total_price | float) - (cost_summary.material_cost | float) - (cost_summary.labor | float)) }}</td>
+      </tr>
+      <tr class="total-row">
+        <td>TOTAL</td>
+        <td>\${{ "%.2f"|format(cost_summary.total_price | float) }}</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Notes -->
+  {% if notes %}
+  <div class="notes-block">
+    <strong>Notes:</strong> {{ notes }}
+  </div>
+  {% endif %}
+
+  <!-- Footer -->
+  <div class="footer">
+    This quotation was generated by <strong>Mekatron</strong> &bull; Valid for 30 days from issue date &bull;
+    All prices in USD unless otherwise stated.
+  </div>
+
+</div>
+</body>
+</html>

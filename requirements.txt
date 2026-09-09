@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+psycopg2-binary
+pinecone
+langchain
+langchain-core
+redis
+pyyaml
+pydantic
+SQLAlchemy
+supabase
+python-dotenv
+langchain-anthropic
+langchain-openai
+langchain-pinecone
+tiktoken
+jinja2
