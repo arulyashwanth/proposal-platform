@@ -166,8 +166,8 @@ def generate_quotation_pdf(
         pdf.cell(80, 10, p_name, border=1)
         pdf.cell(30, 10, sanitize(str(item.get("sku", ""))), border=1)
         pdf.cell(20, 10, str(item.get("quantity", 0)), border=1, align="C")
-        pdf.cell(30, 10, f"${item.get('unit_price', 0):.2f}", border=1, align="R")
-        pdf.cell(30, 10, f"${item.get('subtotal', 0):.2f}", border=1, align="R", new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(30, 10, f"AED {item.get('unit_price', 0):.2f}", border=1, align="R")
+        pdf.cell(30, 10, f"AED {item.get('subtotal', 0):.2f}", border=1, align="R", new_x="LMARGIN", new_y="NEXT")
         
     pdf.ln(10)
     
@@ -183,7 +183,7 @@ def generate_quotation_pdf(
             pdf.set_font("helvetica", "", 10)
         pdf.cell(130, 8, "", border=0)
         pdf.cell(30, 8, label, border=0)
-        pdf.cell(30, 8, f"${val:.2f}", border=0, align="R", new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(30, 8, f"AED {val:.2f}", border=0, align="R", new_x="LMARGIN", new_y="NEXT")
 
     summary_row("Material Cost:", cost_summary.get("material_cost", 0))
     summary_row("Labor:", cost_summary.get("labor", 0))

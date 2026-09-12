@@ -73,6 +73,7 @@ def get_quotation_chain():
     template = """
     You are an AI Proposal Preparation Assistant for Mekatron.
     Generate a detailed quotation draft based on the following requirements.
+    IMPORTANT: Use AED (United Arab Emirates Dirhams) for all currency formatting, not $.
 
     Project Type: {project_type}
     Hardware Requirements: {hardware_requirements}

@@ -240,9 +240,9 @@
         </td>
         <td>{{ item.category | default('—') }}</td>
         <td style="text-align:right">{{ item.quantity }}</td>
-        <td style="text-align:right">\${{ "%.2f"|format(item.unit_price | float) }}</td>
+        <td style="text-align:right">AED {{ "%.2f"|format(item.unit_price | float) }}</td>
         <td style="text-align:right">{{ "%.1f"|format(item.margin | float) }}%</td>
-        <td>\${{ "%.2f"|format(item.subtotal | float) }}</td>
+        <td>AED {{ "%.2f"|format(item.subtotal | float) }}</td>
       </tr>
       {% else %}
       <tr><td colspan="7" style="text-align:center;color:#aaa;padding:20px;">No line items added yet.</td></tr>
@@ -255,19 +255,19 @@
     <table class="summary-table">
       <tr>
         <td>Material Cost</td>
-        <td>\${{ "%.2f"|format(cost_summary.material_cost | float) }}</td>
+        <td>AED {{ "%.2f"|format(cost_summary.material_cost | float) }}</td>
       </tr>
       <tr>
         <td>Labor</td>
-        <td>\${{ "%.2f"|format(cost_summary.labor | float) }}</td>
+        <td>AED {{ "%.2f"|format(cost_summary.labor | float) }}</td>
       </tr>
       <tr>
         <td>Markup ({{ "%.1f"|format(cost_summary.markup | float) }}%)</td>
-        <td>\${{ "%.2f"|format((cost_summary.total_price | float) - (cost_summary.material_cost | float) - (cost_summary.labor | float)) }}</td>
+        <td>AED {{ "%.2f"|format((cost_summary.total_price | float) - (cost_summary.material_cost | float) - (cost_summary.labor | float)) }}</td>
       </tr>
       <tr class="total-row">
         <td>TOTAL</td>
-        <td>\${{ "%.2f"|format(cost_summary.total_price | float) }}</td>
+        <td>AED {{ "%.2f"|format(cost_summary.total_price | float) }}</td>
       </tr>
     </table>
   </div>

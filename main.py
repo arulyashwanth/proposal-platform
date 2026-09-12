@@ -818,7 +818,7 @@ def _recalculate_cost_summary(db: Session, quotation_id: int):
     )
     total_material = sum((float(i.unit_price or 0) * (i.quantity or 0)) for i in items)
     total_qty = sum(i.quantity or 0 for i in items)
-    labor = total_qty * 15.0       # $15 labor per unit
+    labor = total_qty * 15.0       # AED 15 labor per unit
     overhead = total_material * 0.05
     avg_margin = (
         sum(float(i.margin or 0) for i in items) / len(items) if items else 0.0

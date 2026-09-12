@@ -18,7 +18,7 @@ VOLUME_DISCOUNT_TIERS = [
     (100, 999, 0.12),   # 12% discount
 ]
 
-LABOR_RATE_PER_UNIT = Decimal("15.00")   # $15 labor per unit (configurable)
+LABOR_RATE_PER_UNIT = Decimal("15.00")   # AED 15 labor per unit (configurable)
 OVERHEAD_RATE       = Decimal("0.05")    # 5% overhead on material cost
 
 
@@ -161,7 +161,7 @@ def optimize_pricing(
 
     # Check if margin target is achievable; warn if cost is 0
     if total_cost == 0:
-        warnings.append("Total cost is $0. Check that products have supplier prices set.")
+        warnings.append("Total cost is AED 0. Check that products have supplier prices set.")
 
     # Labor as a share — flag if labor > 40% of cost
     total_labor = sum(Decimal(str(i["labor"])) for i in itemized)
