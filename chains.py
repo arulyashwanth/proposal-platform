@@ -63,7 +63,7 @@ def get_quotation_chain():
     from langchain_core.output_parsers import JsonOutputParser
 
     llm = ChatAnthropic(
-        model_name="claude-3-5-sonnet-20240620",
+        model_name="claude-sonnet-4-6",
         temperature=0.3,
         anthropic_api_key=os.getenv("ANTHROPIC_API_KEY"),
     )
@@ -125,8 +125,21 @@ def generate_quotation_draft(
         if "authentication" in error_str or "401" in error_str or "403" in error_str:
             return {**AI_UNAVAILABLE_RESPONSE, "reason": "authentication_failed", "raw_error": str(e)}
 
+        # Model not found — bad model name or not available on this account tier
+        if "not_found" in error_str or "404" in error_str or "model" in error_str:
+            return {
+                **AI_UNAVAILABLE_RESPONSE,
+                "reason": "model_not_found",
+                "raw_error": str(e),
+                "message": (
+                    "The configured Anthropic model is not available on this account. "
+                    "Check chains.py model_name against your account's available models."
+                ),
+            }
+
         # Unknown — re-raise so it surfaces properly in logs
         raise
+
 
 
 # ─── Embedding Helper (OpenAI, with fallback flag) ────────────────────────────
