@@ -206,16 +206,68 @@ async def generate_quotation(req: QuotationGenerate, db: Session = Depends(get_d
     db.commit()
     db.refresh(new_quotation)
 
+    # Fetch real products for the AI to choose from
+    all_products = db.query(models.Product).all()
+    available_products = [
+        {"id": p.id, "name": p.name, "category": p.category, "price": float(p.base_price or 0)}
+        for p in all_products
+    ]
+
     # Attempt AI generation (gracefully handles credit errors)
     project_type = enquiry.project.type if enquiry.project else "General"
     ai_result = generate_quotation_draft(
         project_type=project_type,
         hardware_requirements={"door_type": "Main Entry"},
         customer_specs={"budget": "standard"},
+        available_products=available_products,
     )
 
     status = "ai_draft" if ai_result.get("ai_status") == "success" else "manual_required"
     new_quotation.draft_status = status
+    
+    if status == "ai_draft":
+        # Save AI items to the database
+        for item in ai_result.get("product_selection", []):
+            prod_name = str(item.get("product_name", "")).lower()
+            prod_id = item.get("id") or item.get("product_id")
+            
+            # Fuzzy match by name if AI omitted ID
+            if not prod_id:
+                for p in all_products:
+                    if p.name.lower() in prod_name or prod_name in p.name.lower():
+                        prod_id = p.id
+                        break
+            
+            # Fallback to the first product if matching fails
+            if not prod_id and all_products:
+                prod_id = all_products[0].id
+                
+            if prod_id:
+                db_prod = next((p for p in all_products if p.id == prod_id), None)
+                qty = int(item.get("quantity", 1))
+                # Use AI price, or fallback to DB price
+                unit_price = float(item.get("unit_price", db_prod.base_price if db_prod and db_prod.base_price else 0.0))
+                
+                new_item = models.QuotationItem(
+                    quotation_id=new_quotation.id,
+                    product_id=prod_id,
+                    quantity=qty,
+                    unit_price=unit_price,
+                    margin=0.20
+                )
+                db.add(new_item)
+                
+        # Save AI cost summary to the database
+        pricing = ai_result.get("pricing", {})
+        cs = models.CostSummary(
+            quotation_id=new_quotation.id,
+            material_cost=float(pricing.get("material_cost", pricing.get("material_subtotal", 0))),
+            labor=float(pricing.get("labor_cost", pricing.get("labor", 0))),
+            markup=float(pricing.get("markup", pricing.get("miscellaneous_fees", 0))),
+            total_price=float(pricing.get("total", pricing.get("total_price", 0)))
+        )
+        db.add(cs)
+
     db.commit()
 
     return {
@@ -227,7 +279,7 @@ async def generate_quotation(req: QuotationGenerate, db: Session = Depends(get_d
         "next_step": (
             f"POST /api/quotations/{new_quotation.id}/items to add line items manually"
             if status == "manual_required" else
-            "Review AI draft, then POST /api/quotations/{id}/items to confirm"
+            "Review AI draft, then GET /api/quotations/{id}/download-pdf to see it"
         ),
     }
 
@@ -359,6 +411,51 @@ async def preview_quotation(quotation_id: int, db: Session = Depends(get_db)):
         filename=doc["filename"],
     )
 
+
+@app.get("/api/quotations/{quotation_id}/download-pdf", tags=["Quotations"])
+async def download_quotation_pdf(quotation_id: int, db: Session = Depends(get_db)):
+    """Generate and serve a PDF quotation document."""
+    from document_generator import generate_quotation_pdf
+
+    q = db.query(models.Quotation).filter(models.Quotation.id == quotation_id).first()
+    if not q:
+        raise HTTPException(status_code=404, detail="Quotation not found")
+
+    project_name = q.enquiry.project.name if q.enquiry and q.enquiry.project else "Unnamed Project"
+
+    items = []
+    for it in q.items:
+        items.append({
+            "product_name": it.product.name if it.product else f"Product #{it.product_id}",
+            "sku": it.product.sku if it.product else "",
+            "category": it.product.category if it.product else "",
+            "quantity": it.quantity or 0,
+            "unit_price": float(it.unit_price or 0),
+            "margin": float(it.margin or 0),
+            "subtotal": float(it.unit_price or 0) * (it.quantity or 0),
+        })
+
+    cs = q.cost_summary
+    cost_summary = {
+        "material_cost": float(cs.material_cost or 0) if cs else 0,
+        "labor":         float(cs.labor or 0) if cs else 0,
+        "markup":        float(cs.markup or 0) if cs else 0,
+        "total_price":   float(cs.total_price or 0) if cs else 0,
+    }
+
+    doc = generate_quotation_pdf(
+        quotation_id=quotation_id,
+        project_name=project_name,
+        client_name="Valued Client",
+        items=items,
+        cost_summary=cost_summary,
+    )
+
+    return FileResponse(
+        path=doc["document_path"],
+        media_type="application/pdf",
+        filename=doc["filename"],
+    )
 
 @app.post("/api/quotations/optimize-pricing", tags=["Quotations"])
 async def optimize_pricing_endpoint(req: PricingOptimize, db: Session = Depends(get_db)):
