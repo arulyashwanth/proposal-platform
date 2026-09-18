@@ -1,0 +1,31 @@
+LLM_CONFIG:
+  model: claude-3.5-sonnet
+  temperature: 0.3
+  max_tokens: 2000
+  timeout: 30s
+
+VECTOR_DB:
+  provider: pinecone
+  dimension: 1536
+  similarity_metric: cosine
+  namespaces: [products, specifications, requirements, historical_quotes, pricing_rules]
+  api_key: "pcsk_5dzaWq_Fon5e2p56dsRwiHdqkp9naZG1wp3vuuW4u6oLBEfWSifuwn1nF6zte3VY4DJQZk"
+  environment: "us-east-1"
+  index_name: "mekatron-index"
+
+DATABASE:
+  provider: supabase
+  connection_pool: 20
+  timeout: 10s
+
+RAG_SETTINGS:
+  chunk_size: 512
+  chunk_overlap: 100
+  retrieval_top_k: 5
+  relevance_threshold: 0.7
+
+CACHING:
+  redis_host: localhost
+  redis_port: 6379
+  ttl_supplier_prices: 86400
+  ttl_product_search: 3600
