@@ -1,13 +1,14 @@
-﻿'use client';
+'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useApp, useProject } from '@/context/AppContext';
 import { ConfidenceBadge } from '@/components/ai/ConfidenceBadge';
 import { SourceReference } from '@/components/ai/SourceReference';
 import { Button, Card, CardHeader, CardTitle, CardContent, Table, TableHead, TableBody, TableRow, TableHead2, TableCell, Badge, Dialog, Input, Alert } from '@/components/ui';
 import { ProjectRequirement, RequirementStatus } from '@/types';
-import { CheckCircle2, Edit2, ArrowRight, Sparkles, Check, FileText, AlertTriangle, RefreshCw } from 'lucide-react';
+import { CheckCircle2, Edit2, ArrowRight, Sparkles, Check, FileText, AlertTriangle, RefreshCw, ShieldCheck } from 'lucide-react';
+import { api, ValidationRuleResult } from '@/lib/api';
 
 export default function RequirementsPage() {
   const params = useParams();
@@ -19,6 +20,23 @@ export default function RequirementsPage() {
   const [editingReq, setEditingReq] = useState<ProjectRequirement | null>(null);
   const [editValue, setEditValue] = useState('');
   const [isReanalyzing, setIsReanalyzing] = useState(false);
+  const [validationResult, setValidationResult] = useState<ValidationRuleResult | null>(null);
+
+  useEffect(() => {
+    async function runValidation() {
+      if (!project) return;
+      const specs: Record<string, any> = {};
+      project.requirements.forEach((r) => {
+        specs[r.key || r.label.toLowerCase().replace(/\s+/g, '_')] = r.value;
+      });
+      specs.door_count = project.estimatedDoorQuantity || 48;
+      const res = await api.validateRequirements(project.projectType || 'Commercial', specs);
+      if (res) {
+        setValidationResult(res);
+      }
+    }
+    runValidation();
+  }, [project]);
 
   if (!project) return null;
 
@@ -70,12 +88,21 @@ export default function RequirementsPage() {
     });
   };
 
-  const handleReanalyze = () => {
+  const handleReanalyze = async () => {
     setIsReanalyzing(true);
+    const specs: Record<string, any> = {};
+    project.requirements.forEach((r) => {
+      specs[r.key || r.label.toLowerCase().replace(/\s+/g, '_')] = r.value;
+    });
+    specs.door_count = project.estimatedDoorQuantity || 48;
+    const res = await api.validateRequirements(project.projectType || 'Commercial', specs);
+    if (res) {
+      setValidationResult(res);
+    }
     setTimeout(() => {
       setIsReanalyzing(false);
       dispatch({ type: 'COMPLETE_ANALYSIS', payload: { projectId } });
-    }, 1500);
+    }, 1000);
   };
 
   const unconfirmedCount = project.requirements.filter((r) => r.status !== 'Confirmed').length;
@@ -102,7 +129,20 @@ export default function RequirementsPage() {
         </Card>
       </div>
 
-      {unconfirmedCount > 0 && (
+      {validationResult && (
+        <Alert variant={validationResult.valid ? 'success' : 'warning'} title="FastAPI Regulatory & Technical Validation">
+          <div className="flex items-center justify-between text-xs">
+            <span>{validationResult.summary}</span>
+            {validationResult.valid && (
+              <span className="font-semibold text-emerald-700 flex items-center gap-1">
+                <ShieldCheck className="h-3.5 w-3.5" /> Rule Template Compliant
+              </span>
+            )}
+          </div>
+        </Alert>
+      )}
+
+      {unconfirmedCount > 0 && !validationResult && (
         <Alert variant="warning" title="Human Review Required">
           AI extracted {project.requirements.length} requirements from uploaded documents. {unconfirmedCount} requirement{unconfirmedCount > 1 ? 's' : ''} require user review and confirmation before proceeding to product recommendations.
         </Alert>

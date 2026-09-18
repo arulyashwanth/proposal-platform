@@ -1,6 +1,6 @@
-﻿'use client';
+'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useApp, useProject } from '@/context/AppContext';
 import { Button, Card, CardHeader, CardTitle, CardContent, Badge, Table, TableHead, TableBody, TableRow, TableHead2, TableCell, Dialog, Alert } from '@/components/ui';
@@ -9,8 +9,9 @@ import { formatCurrency } from '@/lib/utils';
 import { AIRecommendation } from '@/types';
 import {
   Sparkles, CheckCircle2, Check, X, Layers, ArrowRight,
-  HelpCircle, Eye, SlidersHorizontal, Scale
+  HelpCircle, Eye, SlidersHorizontal, Scale, RefreshCw
 } from 'lucide-react';
+import { api, QuotationDraftResult } from '@/lib/api';
 
 export default function RecommendationsPage() {
   const params = useParams();
@@ -21,8 +22,32 @@ export default function RecommendationsPage() {
 
   const [showCompare, setShowCompare] = useState(false);
   const [selectedDetailsRec, setSelectedDetailsRec] = useState<AIRecommendation | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [aiDraftResult, setAiDraftResult] = useState<QuotationDraftResult | null>(null);
+
+  useEffect(() => {
+    async function fetchAiDraft() {
+      if (!project) return;
+      const res = await api.generateQuotation(1);
+      if (res) {
+        setAiDraftResult(res);
+      }
+    }
+    fetchAiDraft();
+  }, [project]);
 
   if (!project) return null;
+
+  const handleRegenerate = async () => {
+    setIsGenerating(true);
+    const res = await api.generateQuotation(1);
+    if (res) {
+      setAiDraftResult(res);
+    }
+    setTimeout(() => {
+      setIsGenerating(false);
+    }, 1000);
+  };
 
   const handleAccept = (rec: AIRecommendation) => {
     dispatch({
@@ -51,13 +76,31 @@ export default function RecommendationsPage() {
             AI Product Recommendations
           </h3>
           <p className="text-sm text-slate-500 mt-0.5">
-            Recommendations generated based on 8 confirmed project requirements.
+            Recommendations generated based on confirmed specifications &bull; Currency: AED (Dirhams)
           </p>
         </div>
-        <Button onClick={() => setShowCompare(true)} variant="outline" className="gap-2">
-          <Scale className="h-4 w-4 text-purple-600" /> Compare Recommendations
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button onClick={handleRegenerate} variant="outline" size="sm" isLoading={isGenerating} className="gap-1.5">
+            <RefreshCw className="h-3.5 w-3.5 text-purple-600" /> Refresh AI Draft
+          </Button>
+          <Button onClick={() => setShowCompare(true)} variant="outline" size="sm" className="gap-2">
+            <Scale className="h-4 w-4 text-purple-600" /> Compare Options
+          </Button>
+        </div>
       </div>
+
+      {aiDraftResult && (
+        <Alert variant="info" title="FastAPI Proposal Intelligence Engine">
+          <div className="text-xs space-y-1">
+            <p className="font-semibold text-purple-900">{aiDraftResult.quotation_draft.quotation_draft}</p>
+            <div className="flex items-center gap-4 text-slate-600 pt-1">
+              <span>Estimated Material: <strong>{formatCurrency(aiDraftResult.quotation_draft.pricing.material_cost || 0)}</strong></span>
+              <span>Labor Allowance: <strong>{formatCurrency(aiDraftResult.quotation_draft.pricing.labor_cost || 0)}</strong></span>
+              <span>Target Proposal Total: <strong className="text-emerald-700">{formatCurrency(aiDraftResult.quotation_draft.pricing.total_price || 0)}</strong></span>
+            </div>
+          </div>
+        </Alert>
+      )}
 
       {/* Recommendations Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -162,7 +205,7 @@ export default function RecommendationsPage() {
                     size="sm"
                     variant="ghost"
                     className="flex-1 text-xs text-purple-700"
-                    onClick={() => alert(`Asking AI why ${rec.doorSetCode} was recommended...`)}
+                    onClick={() => setSelectedDetailsRec(rec)}
                   >
                     <HelpCircle className="h-3 w-3 mr-1" /> Ask AI Why?
                   </Button>
@@ -178,7 +221,7 @@ export default function RecommendationsPage() {
         open={showCompare}
         onClose={() => setShowCompare(false)}
         title="Compare AI Door Set Recommendations"
-        description="Side-by-side technical evaluation matrix across project requirements."
+        description="Side-by-side technical evaluation matrix across project requirements in AED."
         size="xl"
       >
         <div className="p-6">
@@ -215,15 +258,15 @@ export default function RecommendationsPage() {
               </TableRow>
               <TableRow>
                 <TableCell className="font-semibold">Primary Supplier</TableCell>
-                <TableCell>Dorma Kaba Group</TableCell>
-                <TableCell>Dorma Kaba Group</TableCell>
-                <TableCell>Eurospec Ltd</TableCell>
+                <TableCell>Allegion (Schlage)</TableCell>
+                <TableCell>ASSA ABLOY</TableCell>
+                <TableCell>DORMA Gulf</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell className="font-semibold">Est. Door Set Unit Price</TableCell>
-                <TableCell className="font-bold text-slate-800">Ð2,775</TableCell>
-                <TableCell className="font-bold text-slate-800">Ð2,380</TableCell>
-                <TableCell className="font-bold text-slate-800">$1,980</TableCell>
+                <TableCell className="font-bold text-slate-800">{formatCurrency(2775)}</TableCell>
+                <TableCell className="font-bold text-slate-800">{formatCurrency(2380)}</TableCell>
+                <TableCell className="font-bold text-slate-800">{formatCurrency(1980)}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell className="font-semibold">Selection Action</TableCell>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Quotation #{{ quotation_id }} — {{ project_name }}</title>
+  <title>Quotation #2 — Downtown Dubai Tower Phase 2</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -187,12 +187,12 @@
   <div class="header">
     <div class="logo-block">
       <h1>MEKATRON</h1>
-      <div class="tagline">AI-Assisted Proposal Preparation System &bull; v{{ mekatron_version }}</div>
+      <div class="tagline">AI-Assisted Proposal Preparation System &bull; v1.0.0</div>
     </div>
     <div class="doc-meta">
       <div class="doc-title">QUOTATION</div>
-      <p><strong>#{{ quotation_id }}</strong></p>
-      <p>Date: {{ date }}</p>
+      <p><strong>#2</strong></p>
+      <p>Date: 18 September 2026</p>
     </div>
   </div>
 
@@ -200,15 +200,15 @@
   <div class="info-grid">
     <div class="info-card">
       <div class="label">Project</div>
-      <div class="value">{{ project_name }}</div>
+      <div class="value">Downtown Dubai Tower Phase 2</div>
     </div>
     <div class="info-card">
       <div class="label">Prepared For</div>
-      <div class="value">{{ client_name }}</div>
+      <div class="value">Valued Client</div>
     </div>
     <div class="info-card">
       <div class="label">Prepared By</div>
-      <div class="value">{{ prepared_by }}</div>
+      <div class="value">Mekatron System</div>
     </div>
     <div class="info-card">
       <div class="label">Status</div>
@@ -231,22 +231,59 @@
       </tr>
     </thead>
     <tbody>
-      {% for item in items %}
+      
       <tr>
-        <td>{{ loop.index }}</td>
+        <td>1</td>
         <td>
-          {{ item.product_name }}
-          {% if item.sku %}<span class="sku-badge">{{ item.sku }}</span>{% endif %}
+          Schlage B60N Heavy Duty Deadbolt
+          <span class="sku-badge">SCH-B60N-619</span>
         </td>
-        <td>{{ item.category | default('—') }}</td>
-        <td style="text-align:right">{{ item.quantity }}</td>
-        <td style="text-align:right">AED {{ "%.2f"|format(item.unit_price | float) }}</td>
-        <td style="text-align:right">{{ "%.1f"|format(item.margin | float) }}%</td>
-        <td>AED {{ "%.2f"|format(item.subtotal | float) }}</td>
+        <td>Deadbolts</td>
+        <td style="text-align:right">48</td>
+        <td style="text-align:right">AED 89.50</td>
+        <td style="text-align:right">0.2%</td>
+        <td>AED 4296.00</td>
       </tr>
-      {% else %}
-      <tr><td colspan="7" style="text-align:center;color:#aaa;padding:20px;">No line items added yet.</td></tr>
-      {% endfor %}
+      
+      <tr>
+        <td>2</td>
+        <td>
+          Schlage ND Series Commercial Lever
+          <span class="sku-badge">SCH-ND80-619</span>
+        </td>
+        <td>Levers</td>
+        <td style="text-align:right">48</td>
+        <td style="text-align:right">AED 145.00</td>
+        <td style="text-align:right">0.2%</td>
+        <td>AED 6960.00</td>
+      </tr>
+      
+      <tr>
+        <td>3</td>
+        <td>
+          Schlage L Series High Security Mortise Lock
+          <span class="sku-badge">SCH-L9453-619</span>
+        </td>
+        <td>Mortise Locks</td>
+        <td style="text-align:right">48</td>
+        <td style="text-align:right">AED 385.00</td>
+        <td style="text-align:right">0.2%</td>
+        <td>AED 18480.00</td>
+      </tr>
+      
+      <tr>
+        <td>4</td>
+        <td>
+          Schlage AD-300 Networked Electronic Lock
+          <span class="sku-badge">SCH-AD300-ACC</span>
+        </td>
+        <td>Electronic Locks</td>
+        <td style="text-align:right">48</td>
+        <td style="text-align:right">AED 720.00</td>
+        <td style="text-align:right">0.2%</td>
+        <td>AED 34560.00</td>
+      </tr>
+      
     </tbody>
   </table>
 
@@ -255,29 +292,25 @@
     <table class="summary-table">
       <tr>
         <td>Material Cost</td>
-        <td>AED {{ "%.2f"|format(cost_summary.material_cost | float) }}</td>
+        <td>AED 64296.00</td>
       </tr>
       <tr>
         <td>Labor</td>
-        <td>AED {{ "%.2f"|format(cost_summary.labor | float) }}</td>
+        <td>AED 2880.00</td>
       </tr>
       <tr>
-        <td>Markup ({{ "%.1f"|format(cost_summary.markup | float) }}%)</td>
-        <td>AED {{ "%.2f"|format((cost_summary.total_price | float) - (cost_summary.material_cost | float) - (cost_summary.labor | float)) }}</td>
+        <td>Markup (12859.2%)</td>
+        <td>AED 3214.80</td>
       </tr>
       <tr class="total-row">
         <td>TOTAL</td>
-        <td>AED {{ "%.2f"|format(cost_summary.total_price | float) }}</td>
+        <td>AED 70390.80</td>
       </tr>
     </table>
   </div>
 
   <!-- Notes -->
-  {% if notes %}
-  <div class="notes-block">
-    <strong>Notes:</strong> {{ notes }}
-  </div>
-  {% endif %}
+  
 
   <!-- Footer -->
   <div class="footer">

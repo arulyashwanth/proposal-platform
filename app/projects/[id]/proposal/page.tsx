@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import { useParams } from 'next/navigation';
@@ -7,8 +7,9 @@ import { Button, Card, CardHeader, CardTitle, CardContent, Badge, Alert, Dialog,
 import { formatCurrency, formatDate } from '@/lib/utils';
 import {
   FileText, CheckCircle2, Download, Send, Edit, Eye, Sparkles,
-  AlertTriangle, ShieldCheck, Check, Clock, User
+  AlertTriangle, ShieldCheck, Check, Clock, User, ExternalLink
 } from 'lucide-react';
+import { api } from '@/lib/api';
 
 export default function ProposalPreparationPage() {
   const params = useParams();
@@ -19,7 +20,7 @@ export default function ProposalPreparationPage() {
   const [isSubmitted, setIsSubmitted] = useState(project?.status === 'Submitted' || project?.status === 'Approval');
   const [showEditModal, setShowEditModal] = useState(false);
   const [executiveSummary, setExecutiveSummary] = useState(
-    `Artibits Ltd is pleased to submit this comprehensive proposal for the ${project?.name || 'Project Alpha'}. This proposal encompasses 48 high-performance commercial fire door assemblies engineered to meet 120-minute fire resistance, high-security ironmongery standards, and stainless steel finishes as requested.`
+    `Artibits Proposal Platform is pleased to submit this comprehensive architectural proposal for ${project?.name || 'Downtown Dubai Tower'}. This proposal encompasses 48 certified commercial fire door assemblies engineered to meet 120-minute fire resistance, high-security ironmongery standards, and satin stainless steel architectural finishes.`
   );
 
   if (!project) return null;
@@ -34,7 +35,7 @@ export default function ProposalPreparationPage() {
       category: 'Proposal',
       projectId,
       projectName: project.name,
-      details: 'Sent final proposal package for senior review and approval.',
+      details: 'Sent final proposal package for senior review and client sign-off.',
       status: 'Success',
     });
     setIsSubmitted(true);
@@ -46,13 +47,28 @@ export default function ProposalPreparationPage() {
       category: 'Proposal',
       projectId,
       projectName: project.name,
-      details: 'Generated official proposal PDF document.',
+      details: 'Generated official proposal PDF document via FastAPI backend.',
       status: 'Success',
     });
-    alert('PDF document successfully generated! Downloading proposal_draft.pdf...');
+    // Open backend PDF download in a new tab
+    const pdfUrl = api.getQuotationPdfUrl(1);
+    window.open(pdfUrl, '_blank');
   };
 
-  const selectedDoorSetCode = project.selectedDoorSetId === 'ds1' ? 'DS-004' : 'DS-006';
+  const handlePreviewHTML = () => {
+    logAudit({
+      action: 'Previewed HTML Quotation',
+      category: 'Proposal',
+      projectId,
+      projectName: project.name,
+      details: 'Launched full HTML proposal preview rendered by FastAPI Jinja2 template.',
+      status: 'Success',
+    });
+    const previewUrl = api.getQuotationPreviewUrl(1);
+    window.open(previewUrl, '_blank');
+  };
+
+  const selectedDoorSetCode = project.selectedDoorSetId === 'ds1' ? 'DS-001' : (project.selectedDoorSetId?.toUpperCase() || 'DS-001');
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
@@ -76,7 +92,7 @@ export default function ProposalPreparationPage() {
           </div>
           <span className="text-slate-300">→</span>
           <div className="flex items-center gap-1.5 font-semibold text-emerald-700">
-            <CheckCircle2 className="h-4 w-4" /> Pricing
+            <CheckCircle2 className="h-4 w-4" /> Pricing (AED)
           </div>
           <span className="text-slate-300">→</span>
           <div className="flex items-center gap-1.5 font-bold text-blue-700 bg-blue-100 px-2 py-1 rounded">
@@ -90,12 +106,12 @@ export default function ProposalPreparationPage() {
       </Card>
 
       {/* AI Assistant Review Banner */}
-      <Alert variant="info" title="AI Document Review Assistant">
+      <Alert variant="info" title="AI Document Review & Compliance Verification">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-purple-600 shrink-0" />
             <span className="text-xs">
-              AI pre-review scan completed. <strong>1 notice:</strong> Allegion UK price list is 45 days old. All 8 technical requirements are satisfied.
+              AI pre-review scan completed &bull; <strong>100% compliant</strong> with BS EN fire rating & security ironmongery requirements. Total values in AED (Dirhams).
             </span>
           </div>
           <Badge variant="purple">Passed Verification</Badge>
@@ -107,7 +123,7 @@ export default function ProposalPreparationPage() {
         {/* Document Header Bar */}
         <div className="bg-slate-800 text-white px-8 py-6 flex items-start justify-between">
           <div>
-            <div className="text-xs text-blue-300 uppercase tracking-widest font-bold">COMMERCIAL PROPOSAL</div>
+            <div className="text-xs text-blue-300 uppercase tracking-widest font-bold">COMMERCIAL PROPOSAL (AED)</div>
             <h1 className="text-2xl font-bold mt-1">{project.name}</h1>
             <p className="text-xs text-slate-300 mt-1">Prepared for: {project.customer}</p>
           </div>
@@ -130,16 +146,16 @@ export default function ProposalPreparationPage() {
           <section className="space-y-3">
             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">2. Technical Specification & Compliance</h3>
             <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-lg text-xs">
-              <div><span className="font-semibold text-slate-600">Fire Resistance:</span> 120 Minutes (Confirmed)</div>
-              <div><span className="font-semibold text-slate-600">Security Standard:</span> High Security Grade 7</div>
-              <div><span className="font-semibold text-slate-600">Door Finish:</span> Stainless Steel</div>
+              <div><span className="font-semibold text-slate-600">Fire Resistance:</span> 120 Minutes (Confirmed BS EN 1634)</div>
+              <div><span className="font-semibold text-slate-600">Security Standard:</span> High Security Grade 1</div>
+              <div><span className="font-semibold text-slate-600">Door Finish:</span> Satin Stainless Steel (316)</div>
               <div><span className="font-semibold text-slate-600">Selected Assembly:</span> {selectedDoorSetCode}</div>
             </div>
           </section>
 
           {/* Door Set Schedule & Itemized Products */}
           <section className="space-y-3">
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">3. Door Set Schedule & Products</h3>
+            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">3. Door Set Schedule & Products (AED)</h3>
             <div className="border border-slate-200 rounded-lg overflow-hidden">
               <table className="w-full text-xs text-left">
                 <thead className="bg-slate-100 border-b border-slate-200 font-semibold text-slate-600">
@@ -147,8 +163,8 @@ export default function ProposalPreparationPage() {
                     <th className="p-2.5">Product Code</th>
                     <th className="p-2.5">Description</th>
                     <th className="p-2.5">Qty</th>
-                    <th className="p-2.5">Unit Price</th>
-                    <th className="p-2.5">Total</th>
+                    <th className="p-2.5">Unit Price (AED)</th>
+                    <th className="p-2.5">Total (AED)</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -173,15 +189,15 @@ export default function ProposalPreparationPage() {
               <div className="w-64 space-y-2 text-xs">
                 <div className="flex justify-between text-slate-600">
                   <span>Subtotal:</span>
-                  <span className="font-semibold">{formatCurrency(project.pricing?.subtotal || 134880)}</span>
+                  <span className="font-semibold">{formatCurrency(project.pricing?.subtotal || 43008)}</span>
                 </div>
                 <div className="flex justify-between text-slate-600">
                   <span>Discount (5%):</span>
-                  <span className="text-emerald-600 font-semibold">-{formatCurrency(project.pricing?.discountAmount || 6744)}</span>
+                  <span className="text-emerald-600 font-semibold">-{formatCurrency(project.pricing?.discountAmount || 2150.4)}</span>
                 </div>
                 <div className="flex justify-between text-slate-600">
-                  <span>VAT (20%):</span>
-                  <span>+{formatCurrency(project.pricing?.taxAmount || 25627)}</span>
+                  <span>UAE VAT (5%):</span>
+                  <span>+{formatCurrency(project.pricing?.taxAmount || 2042.88)}</span>
                 </div>
                 <div className="flex justify-between text-slate-600">
                   <span>Site Allowance:</span>
@@ -189,7 +205,7 @@ export default function ProposalPreparationPage() {
                 </div>
                 <div className="flex justify-between text-base font-bold text-slate-900 pt-2 border-t border-slate-300">
                   <span>Total Investment:</span>
-                  <span className="text-blue-700">{formatCurrency(project.pricing?.finalTotal || 157263)}</span>
+                  <span className="text-blue-700">{formatCurrency(project.pricing?.finalTotal || 46400.48)}</span>
                 </div>
               </div>
             </div>
@@ -197,13 +213,16 @@ export default function ProposalPreparationPage() {
         </div>
 
         {/* Action Controls Footer */}
-        <div className="bg-slate-50 border-t border-slate-200 px-8 py-4 flex items-center justify-between">
+        <div className="bg-slate-50 border-t border-slate-200 px-8 py-4 flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-2">
             <Button size="sm" variant="outline" onClick={() => setShowEditModal(true)} className="gap-1.5">
-              <Edit className="h-3.5 w-3.5" /> Edit Proposal Text
+              <Edit className="h-3.5 w-3.5" /> Edit Narrative
             </Button>
-            <Button size="sm" variant="outline" onClick={handleGeneratePDF} className="gap-1.5">
-              <Download className="h-3.5 w-3.5" /> Export PDF
+            <Button size="sm" variant="outline" onClick={handlePreviewHTML} className="gap-1.5 text-blue-700 border-blue-200 bg-blue-50/50 hover:bg-blue-100">
+              <ExternalLink className="h-3.5 w-3.5" /> Preview HTML Document
+            </Button>
+            <Button size="sm" variant="outline" onClick={handleGeneratePDF} className="gap-1.5 text-emerald-700 border-emerald-200 bg-emerald-50/50 hover:bg-emerald-100">
+              <Download className="h-3.5 w-3.5" /> Download PDF
             </Button>
           </div>
 

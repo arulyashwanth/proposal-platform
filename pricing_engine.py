@@ -171,7 +171,15 @@ def optimize_pricing(
         )
 
     return {
+        "items": itemized,
         "itemized_costs": itemized,
+        "material_total": float(sum(Decimal(str(i["material_total"])) for i in itemized)),
+        "labor_total": float(total_labor),
+        "overhead_total": float(sum(Decimal(str(i["overhead"])) for i in itemized)),
+        "total_internal_cost": float(total_cost),
+        "sell_price": float(sell_price),
+        "currency": "AED",
+        "margin_target": float(margin),
         "cost_breakdown": {
             "total_material": float(sum(Decimal(str(i["material_total"])) for i in itemized)),
             "total_labor":    float(total_labor),
@@ -223,38 +231,50 @@ def validate_requirements_against_template(
             if field not in specifications or specifications[field] is None:
                 errors.append(f"Required field missing: '{field}'")
 
-    # Apply JSON validation rules  [{field, operator, value, message}]
+    # Apply JSON validation rules
     rules = template.validation_rules or []
-    for rule in rules:
-        field    = rule.get("field")
-        operator = rule.get("operator")   # "gte", "lte", "in", "not_null"
-        expected = rule.get("value")
-        message  = rule.get("message", f"Rule failed for field '{field}'")
-        severity = rule.get("severity", "warning")   # "error" or "warning"
+    if isinstance(rules, list):
+        for rule in rules:
+            if not isinstance(rule, dict):
+                continue
+            field    = rule.get("field")
+            operator = rule.get("operator")   # "gte", "lte", "in", "not_null"
+            expected = rule.get("value")
+            message  = rule.get("message", f"Rule failed for field '{field}'")
+            severity = rule.get("severity", "warning")   # "error" or "warning"
 
-        actual = specifications.get(field)
-        failed = False
+            actual = specifications.get(field)
+            failed = False
 
-        if operator == "not_null" and actual is None:
-            failed = True
-        elif actual is None:
-            pass  # Can't evaluate if field missing (already caught above)
-        elif operator == "gte" and float(actual) < float(expected):
-            failed = True
-        elif operator == "lte" and float(actual) > float(expected):
-            failed = True
-        elif operator == "in" and actual not in expected:
-            failed = True
-        elif operator == "eq" and actual != expected:
-            failed = True
+            if operator == "not_null" and actual is None:
+                failed = True
+            elif actual is None:
+                pass  # Can't evaluate if field missing (already caught above)
+            elif operator == "gte" and float(actual) < float(expected):
+                failed = True
+            elif operator == "lte" and float(actual) > float(expected):
+                failed = True
+            elif operator == "in" and actual not in expected:
+                failed = True
+            elif operator == "eq" and actual != expected:
+                failed = True
 
-        if failed:
-            if severity == "error":
-                errors.append(message)
-            else:
-                warnings.append(message)
+            if failed:
+                if severity == "error":
+                    errors.append(message)
+                else:
+                    warnings.append(message)
+    elif isinstance(rules, dict):
+        if "allowed_finishes" in rules and "finish" in specifications:
+            if specifications["finish"] not in rules["allowed_finishes"]:
+                warnings.append(f"Finish '{specifications['finish']}' is non-standard for {project_type}. Standard options: {', '.join(rules['allowed_finishes'])}")
+        if "min_fire_rating" in rules and "fire_rating" in specifications:
+            spec_rating = str(specifications["fire_rating"]).lower()
+            if "none" in spec_rating or "0" in spec_rating:
+                errors.append(f"Project requires minimum fire rating of {rules['min_fire_rating']}")
 
     status = "failed" if errors else ("passed_with_warnings" if warnings else "passed")
+    valid = len(errors) == 0
 
     # Find matching hardware sets for the project type
     matched_hardware = (
@@ -270,8 +290,12 @@ def validate_requirements_against_template(
 
     return {
         "validation_status": status,
+        "valid": valid,
         "project_type": project_type,
         "matched_hardware": matched_hardware_data,
         "warnings": warnings,
         "errors": errors,
+        "missing_required_fields": [e.split("'")[1] for e in errors if "Required field missing" in e],
+        "rule_violations": [e for e in errors if "Required field missing" not in e],
+        "summary": f"All {project_type} architectural specifications verified against building standards." if valid else f"Found {len(errors)} validation items requiring estimator review.",
     }

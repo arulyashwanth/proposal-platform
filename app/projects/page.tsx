@@ -1,11 +1,11 @@
-﻿'use client';
+'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { AppShell } from '@/components/layout/AppShell';
 import { useApp } from '@/context/AppContext';
 import { StatusBadge } from '@/components/projects/StatusBadge';
 import { Badge, Button, Card, Table, TableHead, TableBody, TableRow, TableHead2, TableCell, EmptyState } from '@/components/ui';
-import { formatDate, getDaysUntil } from '@/lib/utils';
+import { formatDate, getDaysUntil, formatCurrency } from '@/lib/utils';
 import { PlusCircle, FolderOpen, Search, Filter, ArrowRight, SlidersHorizontal } from 'lucide-react';
 import { Project, ProjectType } from '@/types';
 
@@ -99,7 +99,7 @@ export default function ProjectsPage() {
                     </TableCell>
                     <TableCell><StatusBadge status={p.status} /></TableCell>
                     <TableCell><span className="text-sm">{p.estimatedDoorQuantity ?? '—'} doors</span></TableCell>
-                    <TableCell><span className="text-sm">{p.totalValue ? `Ð${(p.totalValue / 1000).toFixed(0)}k` : '—'}</span></TableCell>
+                    <TableCell><span className="text-sm font-medium">{p.totalValue ? formatCurrency(p.totalValue) : '—'}</span></TableCell>
                     <TableCell>{getDue(p.expectedSubmissionDate)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">

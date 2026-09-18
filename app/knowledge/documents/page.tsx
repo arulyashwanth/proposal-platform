@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import { AppShell } from '@/components/layout/AppShell';
@@ -7,11 +7,12 @@ import { formatFileSize, formatDate } from '@/lib/utils';
 import { FileText, Search, UploadCloud, Download, Trash2, Eye } from 'lucide-react';
 
 const MOCK_KNOWLEDGE_DOCS = [
-  { id: 'kdoc1', filename: 'Architecture_A102.pdf', type: 'Architectural Drawing', category: 'Architectural Drawings', size: 4200000, uploadDate: '2026-07-28', uploadedBy: 'Sarah Mitchell', status: 'Processed', usedIn: 'Project Alpha' },
-  { id: 'kdoc2', filename: 'Door_Schedule.pdf', type: 'Door Schedule', category: 'Door Schedules', size: 1800000, uploadDate: '2026-07-28', uploadedBy: 'Sarah Mitchell', status: 'Processed', usedIn: 'Project Alpha' },
-  { id: 'kdoc3', filename: 'Project_Specification.pdf', type: 'Specification', category: 'Specifications', size: 3100000, uploadDate: '2026-07-28', uploadedBy: 'Sarah Mitchell', status: 'Processed', usedIn: 'Project Alpha' },
-  { id: 'kdoc4', filename: 'Dorma_Kaba_Price_List_2026.xlsx', type: 'Supplier Prices', category: 'Supplier Documents', size: 8400000, uploadDate: '2026-03-16', uploadedBy: 'David Chen', status: 'Processed', usedIn: 'Global Knowledge' },
-  { id: 'kdoc5', filename: 'BS476_Fire_Door_Standard.pdf', type: 'Standard Spec', category: 'Specifications', size: 2100000, uploadDate: '2026-01-10', uploadedBy: 'David Chen', status: 'Processed', usedIn: 'Global Knowledge' },
+  { id: 'kdoc1', filename: 'Architecture_A102.pdf', type: 'Architectural Drawing', category: 'Architectural Drawings', size: 4200000, uploadDate: '2026-08-28', uploadedBy: 'Sarah Mitchell', status: 'Processed', usedIn: 'Downtown Dubai Tower Phase 2' },
+  { id: 'kdoc2', filename: 'Door_Schedule.pdf', type: 'Door Schedule', category: 'Door Schedules', size: 1800000, uploadDate: '2026-08-28', uploadedBy: 'Sarah Mitchell', status: 'Processed', usedIn: 'Downtown Dubai Tower Phase 2' },
+  { id: 'kdoc3', filename: 'Project_Specification.pdf', type: 'Specification', category: 'Specifications', size: 3100000, uploadDate: '2026-08-28', uploadedBy: 'Sarah Mitchell', status: 'Processed', usedIn: 'Downtown Dubai Tower Phase 2' },
+  { id: 'kdoc4', filename: 'Allegion_UAE_Price_List_2026_AED.xlsx', type: 'Supplier Prices', category: 'Supplier Documents', size: 6200000, uploadDate: '2026-08-02', uploadedBy: 'David Chen', status: 'Processed', usedIn: 'Allegion (Schlage) Catalog' },
+  { id: 'kdoc5', filename: 'ASSA_ABLOY_Trade_Catalogue_v2026.pdf', type: 'Supplier Prices', category: 'Supplier Documents', size: 8400000, uploadDate: '2026-09-11', uploadedBy: 'David Chen', status: 'Processed', usedIn: 'ASSA ABLOY Catalog' },
+  { id: 'kdoc6', filename: 'UAE_Fire_and_Life_Safety_Code_2026.pdf', type: 'Standard Spec', category: 'Specifications', size: 5100000, uploadDate: '2026-01-15', uploadedBy: 'Sarah Mitchell', status: 'Processed', usedIn: 'Global Knowledge' },
 ];
 
 export default function DocumentLibraryPage() {

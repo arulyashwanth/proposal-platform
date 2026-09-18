@@ -7,6 +7,7 @@ import { useApp } from '@/context/AppContext';
 import { Button, Card, CardHeader, CardTitle, CardContent, Input, Textarea, Select, Alert, ProgressBar } from '@/components/ui';
 import { ProjectType, ProjectStage, DocumentType, ProjectDocument } from '@/types';
 import { generateId, formatFileSize } from '@/lib/utils';
+import { api } from '@/lib/api';
 import {
   FileText, UploadCloud, CheckCircle2, ArrowRight, ArrowLeft,
   X, File, Sparkles, Building2, HelpCircle
@@ -108,45 +109,68 @@ export default function NewProjectPage() {
     setUploadedFiles((prev) => prev.filter((d) => d.id !== id));
   };
 
-  const handleAnalyse = () => {
+  const handleAnalyse = async () => {
     setIsAnalyzing(true);
     setAnalysisProgress(10);
-    setAnalysisLogs(['Analysing project information...']);
+    setAnalysisLogs(['Analysing project specifications...']);
+
+    // Trigger backend enquiry creation
+    let backendEnquiryId = 1;
+    try {
+      const backendEnquiry = await api.createEnquiry({
+        project_type: formData.projectType,
+        stage: formData.stage,
+        client_name: formData.customer || 'Commercial Client Ltd',
+        requirements: {
+          fireRating: '120 minutes',
+          doorType: 'Internal',
+          securityLevel: 'High',
+          finish: 'Stainless Steel',
+          doorQuantity: 48,
+        },
+      });
+      if (backendEnquiry) {
+        backendEnquiryId = backendEnquiry.enquiry_id;
+      }
+    } catch (e) {
+      console.warn('Backend enquiry creation fallback:', e);
+    }
 
     setTimeout(() => {
       setAnalysisProgress(35);
-      setAnalysisLogs((prev) => [...prev, '✓ Project information processed']);
+      setAnalysisLogs((prev) => [...prev, '✓ Project information registered on backend']);
     }, 600);
 
     setTimeout(() => {
       setAnalysisProgress(65);
-      setAnalysisLogs((prev) => [...prev, '✓ Documents processed']);
+      setAnalysisLogs((prev) => [...prev, '✓ Architectural specifications parsed']);
     }, 1200);
 
     setTimeout(() => {
       setAnalysisProgress(85);
-      setAnalysisLogs((prev) => [...prev, '✓ Requirements extracted']);
+      setAnalysisLogs((prev) => [...prev, '✓ Requirements extracted & validated']);
     }, 1800);
 
     setTimeout(() => {
       setAnalysisProgress(100);
       setAnalysisLogs((prev) => [
         ...prev,
-        '✓ Door requirements identified',
-        '✓ Relevant knowledge sources searched',
+        '✓ Door opening requirements identified',
+        '✓ Knowledge base matched against hardware sets',
       ]);
 
       // Create Project and redirect
       const newProjectId = `proj-${generateId()}`;
       const newProj = {
         id: newProjectId,
-        name: formData.name || 'New Commercial Project',
+        backendEnquiryId: backendEnquiryId,
+        name: formData.name || 'Downtown Dubai Commercial Tower',
         reference: formData.reference,
-        customer: formData.customer || 'Commercial Client Ltd',
+        customer: formData.customer || 'Emaar Properties PJSC',
         projectType: formData.projectType,
         stage: formData.stage,
         status: 'Requirement Review' as const,
-        location: formData.location || 'London, UK',
+        location: formData.location || 'Dubai, UAE',
         expectedSubmissionDate: formData.expectedSubmissionDate,
         owner: formData.owner,
         ownerId: 'u1',
@@ -167,21 +191,23 @@ export default function NewProjectPage() {
           {
             id: 'nrec1',
             doorSetId: 'ds1',
-            doorSetCode: 'DS-004',
-            doorSetName: 'Commercial Fire Door Set — 120min High Security',
-            matchScore: 94,
+            doorSetCode: 'DS-001',
+            doorSetName: 'HS-Commercial-MainEntry (120min High Security)',
+            matchScore: 96,
             isRecommended: true,
             reasons: [
-              { label: 'Matches project type', matched: true },
-              { label: 'Meets 120-minute fire rating requirement', matched: true },
+              { label: 'Matches project type (Commercial)', matched: true },
+              { label: 'Meets 120-minute fire rating requirement (BS EN 1634)', matched: true },
               { label: 'Available in approved library', matched: true },
-              { label: 'Supplier pricing available', matched: true },
+              { label: 'Supplier pricing available in AED', matched: true },
             ],
             aiExplanation: 'Recommended based on 120-minute fire rating and high security specification.',
             sources: [{ id: 's1', label: 'Specification.pdf — Page 12', type: 'Document' as const }],
             products: [
-              { productId: 'prod1', productCode: 'FDL-120-SS', productName: 'Fire Door Leaf — 120 min', quantity: 48, unitPrice: 1200, supplierId: 'sup1', supplierName: 'Dorma Kaba Group', availability: 'Available' },
-              { productId: 'prod2', productCode: 'DFR-COM-SS', productName: 'Door Frame — Commercial Grade', quantity: 48, unitPrice: 850, supplierId: 'sup1', supplierName: 'Dorma Kaba Group', availability: 'Available' },
+              { productId: '3', productCode: 'SCH-L9453-619', productName: 'Schlage L Series High Security Mortise Lock', quantity: 48, unitPrice: 360, supplierId: '1', supplierName: 'Allegion (Schlage)', availability: 'Available' },
+              { productId: '5', productCode: 'AA-DC400-BC', productName: 'ASSA ABLOY DC400 Overhead Door Closer', quantity: 48, unitPrice: 195, supplierId: '2', supplierName: 'ASSA ABLOY', availability: 'Available' },
+              { productId: '6', productCode: 'AA-HG-BB1279', productName: 'ASSA ABLOY Cam Motion Concealed Hinge', quantity: 144, unitPrice: 22, supplierId: '2', supplierName: 'ASSA ABLOY', availability: 'Available' },
+              { productId: '8', productCode: 'AA-PB3600', productName: 'ASSA ABLOY Touch-Bar Panic Exit Device (36")', quantity: 48, unitPrice: 275, supplierId: '2', supplierName: 'ASSA ABLOY', availability: 'Available' },
             ],
             status: 'Pending' as const,
           },
@@ -198,7 +224,7 @@ export default function NewProjectPage() {
         category: 'Project',
         projectId: newProjectId,
         projectName: newProj.name,
-        details: `Created project ${newProj.name} (${newProj.reference}) and completed AI requirement extraction.`,
+        details: `Created project ${newProj.name} (${newProj.reference}) and registered enquiry on backend.`,
         status: 'Success',
       });
 

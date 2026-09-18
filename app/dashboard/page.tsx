@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import { AppShell } from '@/components/layout/AppShell';
@@ -48,7 +48,7 @@ const TYPE_FILTER_OPTIONS: ('All' | ProjectType)[] = [
   'All', 'Commercial', 'Residential', 'Healthcare', 'Education', 'Industrial', 'Mixed Use', 'Government', 'Hospitality',
 ];
 const STAGE_FILTER_OPTIONS = ['All', 'Design / Specification', 'Tender', 'Job-in-Hand'];
-const OWNER_FILTER_OPTIONS = ['All', 'Sarah Mitchell', 'James Thornton', 'Emma Fitzgerald'];
+const OWNER_FILTER_OPTIONS = ['All', 'Sarah Mitchell', 'Tariq Al-Mansoor', 'Fatima Al-Zahra', 'David Chen'];
 
 function ProjectsTable({ projects }: { projects: Project[] }) {
   const getDueBadge = (dateStr: string) => {

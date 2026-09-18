@@ -1,0 +1,76 @@
+{
+  "quotation_id": 6,
+  "enquiry_id": 3,
+  "draft_status": "ai_draft",
+  "quotation_draft": {
+    "product_selection": [
+      {
+        "product_name": "Standard Main Entry Door",
+        "description": "Solid core residential main entry door with standard finish, pre-hung with frame and basic hardware",
+        "quantity": 1,
+        "unit": "set",
+        "specifications": {
+          "door_type": "Main Entry",
+          "material": "Solid Wood / Steel Composite",
+          "finish": "Standard Paint Ready",
+          "dimensions": "36\" x 80\" (Standard)",
+          "fire_rating": "20-minute",
+          "insulation": "Basic weatherstripping included"
+        }
+      },
+      {
+        "product_name": "Standard Entry Door Lockset",
+        "description": "Keyed entry handleset with deadbolt, standard grade",
+        "quantity": 1,
+        "unit": "piece",
+        "specifications": {
+          "grade": "ANSI Grade 3",
+          "finish": "Satin Nickel",
+          "includes": "Deadbolt + Lever Handle"
+        }
+      },
+      {
+        "product_name": "Door Installation Service",
+        "description": "Professional installation of main entry door including frame alignment, sealing, and hardware fitting",
+        "quantity": 1,
+        "unit": "service",
+        "specifications": {
+          "estimated_duration": "4-6 hours",
+          "includes": "Removal of existing door (if applicable), installation, leveling, sealing, and hardware mounting"
+        }
+      },
+      {
+        "product_name": "Weatherstripping & Threshold Kit",
+        "description": "Standard weatherstripping and aluminum threshold for energy efficiency and weather protection",
+        "quantity": 1,
+        "unit": "kit",
+        "specifications": {
+          "material": "EPDM Rubber + Aluminum",
+          "compatibility": "Standard 36\" door"
+        }
+      }
+    ],
+    "pricing": {
+      "material_door_unit": 450,
+      "material_lockset": 75,
+      "material_weatherstripping_threshold": 55,
+      "material_miscellaneous_hardware": 30,
+      "material_subtotal": 610,
+      "labor_installation": 250,
+      "labor_finishing_and_sealing": 50,
+      "labor_subtotal": 300,
+      "subtotal": 910,
+      "tax_rate_percent": 8,
+      "tax_amount": 72.8,
+      "total": 982.8
+    },
+    "quotation_draft": "QUOTATION DRAFT\n===============\nPrepared by: Mekatron\nProject Type: Residential\nScope: Main Entry Door Supply & Installation\nBudget Category: Standard\n\nDear Valued Customer,\n\nThank you for considering Mekatron for your residential door project. We are pleased to present the following quotation for the supply and professional installation of a standard main entry door system tailored to your specifications and budget.\n\n--- SCOPE OF WORK ---\n\nMekatron will supply and install one (1) complete main entry door package for your residential property. The scope includes:\n\n1. Standard Main Entry Door (36\" x 80\") — Solid core construction with a steel composite exterior for durability and security. The door comes pre-hung with frame, ready for standard paint or finish application.\n\n2. Standard Entry Door Lockset — ANSI Grade 3 keyed entry handleset with integrated deadbolt in a satin nickel finish, providing reliable everyday security.\n\n3. Weatherstripping & Threshold Kit — EPDM rubber weatherstripping combined with an aluminum threshold to ensure proper sealing against weather elements and improve energy efficiency.\n\n4. Professional Installation Service — Our certified technicians will handle the complete installation process, including removal and disposal of any existing door (if applicable), precise frame alignment, leveling, sealing, and full hardware mounting. Estimated installation time is 4–6 hours.\n\n--- PRICING SUMMARY ---\n\nMaterials:\n  • Main Entry Door Unit:              $450.00\n  • Lockset (Keyed Entry + Deadbolt):  $ 75.00\n  • Weatherstripping & Threshold Kit:  $ 55.00\n  • Miscellaneous Hardware & Fasteners:$ 30.00\n  Material Subtotal:                   $610.00\n\nLabor:\n  • Door Installation:                 $250.00\n  • Finishing & Sealing:               $ 50.00\n  Labor Subtotal:                      $300.00\n\nSubtotal:                              $910.00\nTax (8%):                              $ 72.80\n-----------------------------------------\nESTIMATED TOTAL:                       $982.80\n\n--- TERMS & CONDITIONS ---\n\n• This quotation is valid for 30 days from the date of issuance.\n• A 50% deposit is required upon acceptance of the quotation to confirm scheduling.\n• The remaining balance is due upon project completion.\n• Any structural modifications required beyond standard installation will be quoted separately.\n• Warranty: 1-year labor warranty on installation workmanship; manufacturer warranty applies to all supplied products.\n\nWe are committed to delivering quality craftsmanship within your budget. Please do not hesitate to contact us should you have any questions or require adjustments to this proposal.\n\nWarm regards,\nMekatron Proposal Team",
+    "ai_status": "success"
+  },
+  "editable_fields": [
+    "margin",
+    "quantities",
+    "unit_price"
+  ],
+  "next_step": "Review AI draft, then POST /api/quotations/{id}/items to confirm"
+}

@@ -60,10 +60,10 @@ type Action =
 function recalcPricing(project: Project): PricingSummary {
   const existing = project.pricing ?? {
     discountPercent: 5,
-    taxPercent: 20,
+    taxPercent: 5,
     otherCosts: 3500,
     otherCostsDescription: 'Installation & site survey allowance',
-    currency: 'GBP',
+    currency: 'AED',
     isApproved: false,
   };
   const { subtotal, discountAmount, taxAmount, finalTotal } = calculatePricingTotals(

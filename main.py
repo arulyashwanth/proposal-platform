@@ -18,17 +18,32 @@ import models
 from pricing_engine import optimize_pricing, validate_requirements_against_template
 from chains import generate_quotation_draft, get_openai_embeddings
 
-# Ensure all tables exist on startup
+from fastapi.middleware.cors import CORSMiddleware
+from seed_mock_data import seed_database
+
+# Ensure all tables exist on startup and seed if empty
 models.Base.metadata.create_all(bind=engine)
+try:
+    seed_database()
+except Exception as e:
+    print(f"Startup DB seeding notice: {e}")
 
 app = FastAPI(
     title="Mekatron — AI-Assisted Proposal Preparation System",
     version="1.0.0",
     description=(
-        "Backend API for Mekatron. "
-        "AI endpoints (quotation/generate, products/search via Pinecone) "
-        "return graceful 'ai_status: unavailable' responses when credits are exhausted."
+        "Backend API for Mekatron Proposal Platform with AED currency support, "
+        "dynamic pricing margin optimizer, and automated quotation documents."
     ),
+)
+
+# Enable CORS for Next.js frontend (local dev and preview)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
