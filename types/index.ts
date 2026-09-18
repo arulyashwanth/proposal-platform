@@ -344,6 +344,9 @@ export interface Project {
   pricing?: PricingSummary;
   proposal?: Proposal;
 
+  // Backend integration IDs
+  backendEnquiryId?: number;
+
   // Analysis state
   analysisCompleted: boolean;
   requirementsConfirmed: boolean;

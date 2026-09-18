@@ -50,8 +50,8 @@ export default function ProposalPreparationPage() {
       details: 'Generated official proposal PDF document via FastAPI backend.',
       status: 'Success',
     });
-    // Open backend PDF download in a new tab
-    const pdfUrl = api.getQuotationPdfUrl(1);
+    // Open backend PDF download in a new tab — use "latest" to get the most recently generated quotation
+    const pdfUrl = api.getQuotationPdfUrl('latest');
     window.open(pdfUrl, '_blank');
   };
 
@@ -64,7 +64,7 @@ export default function ProposalPreparationPage() {
       details: 'Launched full HTML proposal preview rendered by FastAPI Jinja2 template.',
       status: 'Success',
     });
-    const previewUrl = api.getQuotationPreviewUrl(1);
+    const previewUrl = api.getQuotationPreviewUrl('latest');
     window.open(previewUrl, '_blank');
   };
 

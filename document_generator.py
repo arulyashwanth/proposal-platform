@@ -121,8 +121,9 @@ def generate_quotation_pdf(
     ensure_dirs()
     
     pdf = QuotationPDF()
+    pdf.set_margins(10, 10, 10)  # left, top, right = 10mm each → 190mm usable width
     pdf.add_page()
-    
+
     # Project & Client Info
     pdf.set_font("helvetica", "B", 12)
     pdf.set_text_color(0, 0, 0)
@@ -147,28 +148,29 @@ def generate_quotation_pdf(
     
     pdf.ln(10)
     
-    # Items Table Header
-    pdf.set_font("helvetica", "B", 10)
-    pdf.set_fill_color(240, 240, 240)
-    pdf.cell(80, 10, "Product", border=1, fill=True)
-    pdf.cell(30, 10, "SKU", border=1, fill=True)
-    pdf.cell(20, 10, "Qty", border=1, align="C", fill=True)
-    pdf.cell(30, 10, "Unit Price", border=1, align="R", fill=True)
-    pdf.cell(30, 10, "Subtotal", border=1, align="R", fill=True, new_x="LMARGIN", new_y="NEXT")
-    
+    # Items Table Header — total width = 75+35+15+32+33 = 190mm (fits A4 with 10mm margins)
+    pdf.set_font("helvetica", "B", 9)
+    pdf.set_fill_color(41, 128, 185)
+    pdf.set_text_color(255, 255, 255)
+    pdf.cell(75, 10, "Product", border=1, fill=True, align="L")
+    pdf.cell(35, 10, "SKU", border=1, fill=True, align="L")
+    pdf.cell(15, 10, "Qty", border=1, fill=True, align="C")
+    pdf.cell(32, 10, "Unit Price (AED)", border=1, fill=True, align="R")
+    pdf.cell(33, 10, "Subtotal (AED)", border=1, fill=True, align="R", ln=1)
+
     # Items Table Body
-    pdf.set_font("helvetica", "", 10)
-    for item in items:
-        # truncate product name if too long
-        p_name = sanitize(str(item.get("product_name", "")))[:42]
-        if len(str(item.get("product_name", ""))) > 42:
-            p_name += "..."
-        pdf.cell(80, 10, p_name, border=1)
-        pdf.cell(30, 10, sanitize(str(item.get("sku", ""))), border=1)
-        pdf.cell(20, 10, str(item.get("quantity", 0)), border=1, align="C")
-        pdf.cell(30, 10, f"AED {item.get('unit_price', 0):.2f}", border=1, align="R")
-        pdf.cell(30, 10, f"AED {item.get('subtotal', 0):.2f}", border=1, align="R", new_x="LMARGIN", new_y="NEXT")
-        
+    pdf.set_text_color(0, 0, 0)
+    pdf.set_font("helvetica", "", 9)
+    for i, item in enumerate(items):
+        fill = i % 2 == 0
+        pdf.set_fill_color(248, 248, 248) if fill else pdf.set_fill_color(255, 255, 255)
+        p_name = sanitize(str(item.get("product_name", "")))[:44]
+        pdf.cell(75, 9, p_name, border=1, fill=fill)
+        pdf.cell(35, 9, sanitize(str(item.get("sku", ""))), border=1, fill=fill)
+        pdf.cell(15, 9, str(item.get("quantity", 0)), border=1, align="C", fill=fill)
+        pdf.cell(32, 9, f"{float(item.get('unit_price', 0)):.2f}", border=1, align="R", fill=fill)
+        pdf.cell(33, 9, f"{float(item.get('subtotal', 0)):.2f}", border=1, align="R", fill=fill, ln=1)
+
     pdf.ln(10)
     
     # Cost Summary
@@ -197,7 +199,8 @@ def generate_quotation_pdf(
         pdf.set_font("helvetica", "", 10)
         pdf.multi_cell(0, 6, sanitize(notes))
         
-    filename = f"quotation_{quotation_id}_{datetime.date.today().isoformat()}.pdf"
+    import time
+    filename = f"quotation_{quotation_id}_{datetime.date.today().isoformat()}_{int(time.time())}.pdf"
     output_path = EXPORTS_DIR / filename
     
     pdf.output(str(output_path))

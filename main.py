@@ -382,14 +382,19 @@ async def add_quotation_item(
 
 
 @app.get("/api/quotations/{quotation_id}/preview", tags=["Quotations"])
-async def preview_quotation(quotation_id: int, db: Session = Depends(get_db)):
+async def preview_quotation(quotation_id: str, db: Session = Depends(get_db)):
     """Generate and serve the HTML quotation document."""
     from document_generator import generate_quotation_html
 
-    q = db.query(models.Quotation).filter(models.Quotation.id == quotation_id).first()
+    if quotation_id.lower() == "latest":
+        q = db.query(models.Quotation).order_by(models.Quotation.id.desc()).first()
+    else:
+        q = db.query(models.Quotation).filter(models.Quotation.id == int(quotation_id)).first()
+
     if not q:
         raise HTTPException(status_code=404, detail="Quotation not found")
 
+    quotation_id_int = q.id
     project_name = q.enquiry.project.name if q.enquiry and q.enquiry.project else "Unnamed Project"
 
     items = []
@@ -413,7 +418,7 @@ async def preview_quotation(quotation_id: int, db: Session = Depends(get_db)):
     }
 
     doc = generate_quotation_html(
-        quotation_id=quotation_id,
+        quotation_id=quotation_id_int,
         project_name=project_name,
         client_name="Valued Client",
         items=items,
@@ -428,13 +433,21 @@ async def preview_quotation(quotation_id: int, db: Session = Depends(get_db)):
 
 
 @app.get("/api/quotations/{quotation_id}/download-pdf", tags=["Quotations"])
-async def download_quotation_pdf(quotation_id: int, db: Session = Depends(get_db)):
+async def download_quotation_pdf(quotation_id: str, db: Session = Depends(get_db)):
     """Generate and serve a PDF quotation document."""
     from document_generator import generate_quotation_pdf
 
-    q = db.query(models.Quotation).filter(models.Quotation.id == quotation_id).first()
+    if quotation_id.lower() == "latest":
+        q = db.query(models.Quotation).order_by(models.Quotation.id.desc()).first()
+    else:
+        q = db.query(models.Quotation).filter(models.Quotation.id == int(quotation_id)).first()
+        
     if not q:
         raise HTTPException(status_code=404, detail="Quotation not found")
+    
+    # ensure we pass an int to the generator
+    quotation_id_int = q.id
+
 
     project_name = q.enquiry.project.name if q.enquiry and q.enquiry.project else "Unnamed Project"
 
@@ -459,7 +472,7 @@ async def download_quotation_pdf(quotation_id: int, db: Session = Depends(get_db
     }
 
     doc = generate_quotation_pdf(
-        quotation_id=quotation_id,
+        quotation_id=quotation_id_int,
         project_name=project_name,
         client_name="Valued Client",
         items=items,

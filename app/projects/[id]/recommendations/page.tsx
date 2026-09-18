@@ -28,7 +28,8 @@ export default function RecommendationsPage() {
   useEffect(() => {
     async function fetchAiDraft() {
       if (!project) return;
-      const res = await api.generateQuotation(1);
+      const enquiryId = project.backendEnquiryId ?? 1;
+      const res = await api.generateQuotation(enquiryId);
       if (res) {
         setAiDraftResult(res);
       }
@@ -40,7 +41,8 @@ export default function RecommendationsPage() {
 
   const handleRegenerate = async () => {
     setIsGenerating(true);
-    const res = await api.generateQuotation(1);
+    const enquiryId = project.backendEnquiryId ?? 1;
+    const res = await api.generateQuotation(enquiryId);
     if (res) {
       setAiDraftResult(res);
     }

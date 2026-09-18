@@ -150,7 +150,7 @@ class CostSummary(Base):
     quotation_id = Column(Integer, ForeignKey("quotations.id"))
     material_cost = Column(Numeric(12, 2))
     labor = Column(Numeric(12, 2))
-    markup = Column(Numeric(5, 2))
+    markup = Column(Numeric(12, 2))
     total_price = Column(Numeric(12, 2))
 
     quotation = relationship("Quotation", back_populates="cost_summary")
