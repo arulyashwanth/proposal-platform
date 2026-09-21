@@ -106,8 +106,8 @@ def sanitize(text: str) -> str:
     return text.encode('latin-1', 'replace').decode('latin-1')
 
 
-def generate_quotation_pdf(
-    quotation_id: int,
+def generate_quotation_excel(
+    quotation_ref: str,
     project_name: str,
     client_name: str,
     items: List[Dict[str, Any]],
@@ -116,97 +116,126 @@ def generate_quotation_pdf(
     notes: Optional[str] = None,
 ) -> Dict[str, str]:
     """
-    Generate a professional PDF quotation using fpdf2.
+    Generate a professional Excel quotation with 4 sheets.
     """
     ensure_dirs()
-    
-    pdf = QuotationPDF()
-    pdf.set_margins(10, 10, 10)  # left, top, right = 10mm each → 190mm usable width
-    pdf.add_page()
+    import time
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 
-    # Project & Client Info
-    pdf.set_font("helvetica", "B", 12)
-    pdf.set_text_color(0, 0, 0)
-    pdf.cell(50, 8, "Quotation Ref:", border=0)
-    pdf.set_font("helvetica", "", 12)
-    pdf.cell(0, 8, f"QTN-{quotation_id:04d}", border=0, new_x="LMARGIN", new_y="NEXT")
+    wb = Workbook()
     
-    pdf.set_font("helvetica", "B", 12)
-    pdf.cell(50, 8, "Project:", border=0)
-    pdf.set_font("helvetica", "", 12)
-    pdf.cell(0, 8, sanitize(project_name), border=0, new_x="LMARGIN", new_y="NEXT")
+    # 1. Cover Letter
+    ws_cover = wb.active
+    ws_cover.title = "Cover Letter"
+    ws_cover.column_dimensions['A'].width = 25
+    ws_cover.column_dimensions['B'].width = 60
     
-    pdf.set_font("helvetica", "B", 12)
-    pdf.cell(50, 8, "Client:", border=0)
-    pdf.set_font("helvetica", "", 12)
-    pdf.cell(0, 8, sanitize(client_name), border=0, new_x="LMARGIN", new_y="NEXT")
+    bold_font = Font(bold=True)
+    header_font = Font(bold=True, size=14, color="FFFFFF")
+    header_fill = PatternFill(start_color="2980b9", end_color="2980b9", fill_type="solid")
     
-    pdf.set_font("helvetica", "B", 12)
-    pdf.cell(50, 8, "Date:", border=0)
-    pdf.set_font("helvetica", "", 12)
-    pdf.cell(0, 8, datetime.date.today().strftime("%d %B %Y"), border=0, new_x="LMARGIN", new_y="NEXT")
+    ws_cover.append(["TECHNICAL SUBMITTAL"])
+    ws_cover["A1"].font = Font(bold=True, size=16)
+    ws_cover.append([f"REF.No.: {quotation_ref}"])
+    ws_cover.append([])
+    ws_cover.append(["Attention :", f"{client_name}"])
+    ws_cover.append([None, "Project Section / Engineer"])
+    ws_cover.append([])
+    ws_cover.append(["Project Name:", project_name])
+    ws_cover.append(["Date:", datetime.date.today().strftime("%d %B %Y")])
+    ws_cover.append([])
+    ws_cover.append(["Dear Sir,"])
+    ws_cover.append(["Subject:", "Ironmongery Submission for " + project_name])
     
-    pdf.ln(10)
-    
-    # Items Table Header — total width = 75+35+15+32+33 = 190mm (fits A4 with 10mm margins)
-    pdf.set_font("helvetica", "B", 9)
-    pdf.set_fill_color(41, 128, 185)
-    pdf.set_text_color(255, 255, 255)
-    pdf.cell(75, 10, "Product", border=1, fill=True, align="L")
-    pdf.cell(35, 10, "SKU", border=1, fill=True, align="L")
-    pdf.cell(15, 10, "Qty", border=1, fill=True, align="C")
-    pdf.cell(32, 10, "Unit Price (AED)", border=1, fill=True, align="R")
-    pdf.cell(33, 10, "Subtotal (AED)", border=1, fill=True, align="R", ln=1)
+    for row in ws_cover.iter_rows(min_row=1, max_row=11, min_col=1, max_col=1):
+        for cell in row:
+            if cell.value:
+                cell.font = bold_font
 
-    # Items Table Body
-    pdf.set_text_color(0, 0, 0)
-    pdf.set_font("helvetica", "", 9)
-    for i, item in enumerate(items):
-        fill = i % 2 == 0
-        pdf.set_fill_color(248, 248, 248) if fill else pdf.set_fill_color(255, 255, 255)
-        p_name = sanitize(str(item.get("product_name", "")))[:44]
-        pdf.cell(75, 9, p_name, border=1, fill=fill)
-        pdf.cell(35, 9, sanitize(str(item.get("sku", ""))), border=1, fill=fill)
-        pdf.cell(15, 9, str(item.get("quantity", 0)), border=1, align="C", fill=fill)
-        pdf.cell(32, 9, f"{float(item.get('unit_price', 0)):.2f}", border=1, align="R", fill=fill)
-        pdf.cell(33, 9, f"{float(item.get('subtotal', 0)):.2f}", border=1, align="R", fill=fill, ln=1)
+    # 2. Hardware sets
+    ws_hw = wb.create_sheet("Hardware sets")
+    ws_hw.append(["PROJECT NAME:", project_name, "", "", "", "", "DATE:", datetime.date.today().strftime("%d.%m.%Y")])
+    ws_hw.append([f"REF.No.: {quotation_ref}"])
+    ws_hw.append(["HARDWARE SETS SCHEDULE"])
+    ws_hw["A3"].font = Font(bold=True, size=12)
+    ws_hw.append([])
+    
+    headers = ["ITEM", "SKU", "DESCRIPTION", "QTY", "UNIT PRICE (AED)", "SUBTOTAL (AED)"]
+    ws_hw.append(headers)
+    for col, width in zip(['A', 'B', 'C', 'D', 'E', 'F'], [20, 20, 50, 10, 20, 20]):
+        ws_hw.column_dimensions[col].width = width
+        
+    for cell in ws_hw[5]:
+        cell.font = bold_font
+        cell.fill = header_fill
+        
+    for item in items:
+        ws_hw.append([
+            sanitize(str(item.get("product_name", ""))),
+            sanitize(str(item.get("sku", ""))),
+            sanitize(str(item.get("category", ""))),
+            item.get("quantity", 0),
+            float(item.get('unit_price', 0)),
+            float(item.get('subtotal', 0))
+        ])
 
-    pdf.ln(10)
+    # 3. Costing breakdown
+    ws_cost = wb.create_sheet("Costing breakdown")
+    ws_cost.append(["PROJECT NAME:", project_name])
+    ws_cost.append([f"REF.No.: {quotation_ref}"])
+    ws_cost.append([])
+    ws_cost.append(["COSTING BREAKDOWN"])
+    ws_cost["A4"].font = Font(bold=True, size=12)
+    ws_cost.append([])
     
-    # Cost Summary
-    pdf.set_font("helvetica", "B", 12)
-    pdf.cell(0, 10, "Cost Summary", border=0, new_x="LMARGIN", new_y="NEXT")
-    pdf.set_font("helvetica", "", 10)
+    ws_cost.column_dimensions['A'].width = 25
+    ws_cost.column_dimensions['B'].width = 25
     
-    def summary_row(label, val, is_bold=False):
+    def add_cost_row(label, val, is_bold=False):
+        ws_cost.append([label, float(val)])
         if is_bold:
-            pdf.set_font("helvetica", "B", 12)
-        else:
-            pdf.set_font("helvetica", "", 10)
-        pdf.cell(130, 8, "", border=0)
-        pdf.cell(30, 8, label, border=0)
-        pdf.cell(30, 8, f"AED {val:.2f}", border=0, align="R", new_x="LMARGIN", new_y="NEXT")
+            ws_cost[ws_cost.max_row][0].font = bold_font
+            ws_cost[ws_cost.max_row][1].font = bold_font
 
-    summary_row("Material Cost:", cost_summary.get("material_cost", 0))
-    summary_row("Labor:", cost_summary.get("labor", 0))
-    summary_row("Markup:", cost_summary.get("markup", 0))
-    summary_row("Total Price:", cost_summary.get("total_price", 0), is_bold=True)
+    add_cost_row("Material Cost (AED):", cost_summary.get("material_cost", 0))
+    add_cost_row("Labor (AED):", cost_summary.get("labor", 0))
+    add_cost_row("Markup (AED):", cost_summary.get("markup", 0))
+    add_cost_row("Total Price (AED):", cost_summary.get("total_price", 0), is_bold=True)
     
     if notes:
-        pdf.ln(10)
-        pdf.set_font("helvetica", "B", 10)
-        pdf.cell(0, 8, "Notes:", border=0, new_x="LMARGIN", new_y="NEXT")
-        pdf.set_font("helvetica", "", 10)
-        pdf.multi_cell(0, 6, sanitize(notes))
+        ws_cost.append([])
+        ws_cost.append(["Notes:"])
+        ws_cost.append([sanitize(notes)])
+        ws_cost[ws_cost.max_row - 1][0].font = bold_font
+
+    # 4. Delivery schedule
+    ws_del = wb.create_sheet("Delivery schedule")
+    ws_del.append(["PROJECT NAME:", project_name])
+    ws_del.append([f"REF.No.: {quotation_ref}"])
+    ws_del.append([])
+    ws_del.append(["DELIVERY SCHEDULE"])
+    ws_del["A4"].font = Font(bold=True, size=12)
+    ws_del.append([])
+    ws_del.append(["Phase", "Description", "Estimated Timeline"])
+    for cell in ws_del[6]:
+        cell.font = bold_font
+        cell.fill = header_fill
         
-    import time
-    filename = f"quotation_{quotation_id}_{datetime.date.today().isoformat()}_{int(time.time())}.pdf"
+    ws_del.column_dimensions['A'].width = 20
+    ws_del.column_dimensions['B'].width = 50
+    ws_del.column_dimensions['C'].width = 25
+    
+    ws_del.append(["Phase 1", "Hardware Sets - Initial Batch", "2-3 Weeks from Approval"])
+    ws_del.append(["Phase 2", "Hardware Sets - Final Batch", "4-6 Weeks from Approval"])
+
+    filename = f"quotation_{quotation_ref}_{datetime.date.today().isoformat()}_{int(time.time())}.xlsx"
     output_path = EXPORTS_DIR / filename
     
-    pdf.output(str(output_path))
+    wb.save(str(output_path))
     
     return {
         "document_path": str(output_path.resolve()),
         "filename": filename,
-        "download_url": f"http://localhost:8000/api/quotations/{quotation_id}/download-pdf",
+        "download_url": f"http://localhost:8000/api/quotations/{quotation_ref}/download-pdf",
     }

@@ -41,18 +41,55 @@ export default function ProposalPreparationPage() {
     setIsSubmitted(true);
   };
 
-  const handleGeneratePDF = () => {
+  const handleGenerateExcel = async () => {
     logAudit({
-      action: 'Generated Proposal PDF',
+      action: 'Generated Quotation Excel',
       category: 'Proposal',
       projectId,
       projectName: project.name,
-      details: 'Generated official proposal PDF document via FastAPI backend.',
+      details: 'Generated official quotation Excel document matching frontend state.',
       status: 'Success',
     });
-    // Open backend PDF download in a new tab — use "latest" to get the most recently generated quotation
-    const pdfUrl = api.getQuotationPdfUrl('latest');
-    window.open(pdfUrl, '_blank');
+    
+    try {
+      const items = project.selectedProducts.map(p => ({
+        product_name: p.productName,
+        sku: p.productCode,
+        category: p.category || 'Hardware',
+        quantity: p.quantity || 1,
+        unit_price: p.unitPrice || 0,
+        subtotal: p.totalPrice || 0
+      }));
+
+      const cost_summary = {
+        material_cost: project.pricing?.subtotal || 0,
+        labor: 0,
+        markup: project.pricing?.otherCosts || 0,
+        total_price: project.pricing?.finalTotal || 0
+      };
+
+      const data = {
+        reference_id: project.id,
+        project_name: project.name,
+        client_name: project.customer || 'Valued Client',
+        items,
+        cost_summary,
+        notes: ''
+      };
+
+      const blob = await api.exportExcel(data);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `quotation_${project.id}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to download Excel:', err);
+      alert('Failed to download Excel file. Please ensure backend is running.');
+    }
   };
 
   const handlePreviewHTML = () => {
@@ -64,7 +101,7 @@ export default function ProposalPreparationPage() {
       details: 'Launched full HTML proposal preview rendered by FastAPI Jinja2 template.',
       status: 'Success',
     });
-    const previewUrl = api.getQuotationPreviewUrl('latest');
+    const previewUrl = api.getQuotationPreviewUrl(project.backendEnquiryId ? `enquiry_${project.backendEnquiryId}` : 'latest');
     window.open(previewUrl, '_blank');
   };
 
@@ -221,8 +258,8 @@ export default function ProposalPreparationPage() {
             <Button size="sm" variant="outline" onClick={handlePreviewHTML} className="gap-1.5 text-blue-700 border-blue-200 bg-blue-50/50 hover:bg-blue-100">
               <ExternalLink className="h-3.5 w-3.5" /> Preview HTML Document
             </Button>
-            <Button size="sm" variant="outline" onClick={handleGeneratePDF} className="gap-1.5 text-emerald-700 border-emerald-200 bg-emerald-50/50 hover:bg-emerald-100">
-              <Download className="h-3.5 w-3.5" /> Download PDF
+            <Button size="sm" variant="outline" onClick={handleGenerateExcel} className="gap-1.5 text-emerald-700 border-emerald-200 bg-emerald-50/50 hover:bg-emerald-100">
+              <Download className="h-3.5 w-3.5" /> Download Quotation
             </Button>
           </div>
 

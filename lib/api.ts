@@ -247,4 +247,16 @@ export const api = {
   getQuotationPdfUrl(quotationId: number | string): string {
     return `${API_BASE_URL}/api/quotations/${quotationId}/download-pdf`;
   },
+
+  async exportExcel(data: any): Promise<Blob> {
+    const response = await fetch(`${API_BASE_URL}/api/quotations/export-excel`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error('Failed to export Excel');
+    return await response.blob();
+  },
 };

@@ -107,6 +107,27 @@ class DoorFormCreate(BaseModel):
     specifications: Optional[str] = None
     json_config: Optional[Dict[str, Any]] = None
 
+class ExportItem(BaseModel):
+    product_name: str
+    sku: str
+    category: str
+    quantity: int
+    unit_price: float
+    subtotal: float
+
+class ExportCostSummary(BaseModel):
+    material_cost: float
+    labor: float
+    markup: float
+    total_price: float
+
+class ExportQuotation(BaseModel):
+    reference_id: str
+    project_name: str
+    client_name: str
+    items: List[ExportItem]
+    cost_summary: ExportCostSummary
+    notes: Optional[str] = None
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # HEALTH CHECK
@@ -388,6 +409,9 @@ async def preview_quotation(quotation_id: str, db: Session = Depends(get_db)):
 
     if quotation_id.lower() == "latest":
         q = db.query(models.Quotation).order_by(models.Quotation.id.desc()).first()
+    elif quotation_id.lower().startswith("enquiry_"):
+        eid = int(quotation_id.split("_")[1])
+        q = db.query(models.Quotation).filter(models.Quotation.enquiry_id == eid).order_by(models.Quotation.id.desc()).first()
     else:
         q = db.query(models.Quotation).filter(models.Quotation.id == int(quotation_id)).first()
 
@@ -434,11 +458,14 @@ async def preview_quotation(quotation_id: str, db: Session = Depends(get_db)):
 
 @app.get("/api/quotations/{quotation_id}/download-pdf", tags=["Quotations"])
 async def download_quotation_pdf(quotation_id: str, db: Session = Depends(get_db)):
-    """Generate and serve a PDF quotation document."""
-    from document_generator import generate_quotation_pdf
+    """Generate and serve an Excel quotation document (originally PDF)."""
+    from document_generator import generate_quotation_excel
 
     if quotation_id.lower() == "latest":
         q = db.query(models.Quotation).order_by(models.Quotation.id.desc()).first()
+    elif quotation_id.lower().startswith("enquiry_"):
+        eid = int(quotation_id.split("_")[1])
+        q = db.query(models.Quotation).filter(models.Quotation.enquiry_id == eid).order_by(models.Quotation.id.desc()).first()
     else:
         q = db.query(models.Quotation).filter(models.Quotation.id == int(quotation_id)).first()
         
@@ -471,7 +498,7 @@ async def download_quotation_pdf(quotation_id: str, db: Session = Depends(get_db
         "total_price":   float(cs.total_price or 0) if cs else 0,
     }
 
-    doc = generate_quotation_pdf(
+    doc = generate_quotation_excel(
         quotation_id=quotation_id_int,
         project_name=project_name,
         client_name="Valued Client",
@@ -481,7 +508,27 @@ async def download_quotation_pdf(quotation_id: str, db: Session = Depends(get_db
 
     return FileResponse(
         path=doc["document_path"],
-        media_type="application/pdf",
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        filename=doc["filename"],
+    )
+
+@app.post("/api/quotations/export-excel", tags=["Quotations"])
+async def export_quotation_excel(req: ExportQuotation):
+    """Generate Excel directly from frontend state to ensure 100% match."""
+    from document_generator import generate_quotation_excel
+    
+    doc = generate_quotation_excel(
+        quotation_ref=req.reference_id,
+        project_name=req.project_name,
+        client_name=req.client_name,
+        items=[it.dict() for it in req.items],
+        cost_summary=req.cost_summary.dict(),
+        notes=req.notes
+    )
+
+    return FileResponse(
+        path=doc["document_path"],
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         filename=doc["filename"],
     )
 
