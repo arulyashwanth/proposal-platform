@@ -361,9 +361,16 @@ export default function NewProjectPage() {
                       id="file-upload"
                       onChange={handleFileUpload}
                     />
-                    <label htmlFor="file-upload" className="inline-block mt-3">
-                      <Button size="sm" variant="outline" type="button">Select Files</Button>
-                    </label>
+                    <div className="inline-block mt-3">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        type="button" 
+                        onClick={() => document.getElementById('file-upload')?.click()}
+                      >
+                        Select Files
+                      </Button>
+                    </div>
                   </div>
                 </div>
 

@@ -276,23 +276,17 @@ def validate_requirements_against_template(
     status = "failed" if errors else ("passed_with_warnings" if warnings else "passed")
     valid = len(errors) == 0
 
-    # Find matching hardware sets for the project type
-    matched_hardware = (
-        db.query(models.HardwareSet)
-        .filter(models.HardwareSet.category.ilike(f"%{project_type}%"))
-        .limit(5)
-        .all()
-    )
-    matched_hardware_data = [
-        {"id": h.id, "name": h.name, "door_type": h.door_type, "category": h.category}
-        for h in matched_hardware
-    ]
+    # Find and score all hardware sets using the matching engine
+    from hardware_set_matcher import match_hardware_sets
+    hardware_match_result = match_hardware_sets(db, project_type, specifications)
 
     return {
         "validation_status": status,
         "valid": valid,
         "project_type": project_type,
-        "matched_hardware": matched_hardware_data,
+        "matched_hardware": hardware_match_result.get("exact_matches") or
+                            ([hardware_match_result["closest_match"]] if hardware_match_result.get("closest_match") else []),
+        "hardware_match": hardware_match_result,
         "warnings": warnings,
         "errors": errors,
         "missing_required_fields": [e.split("'")[1] for e in errors if "Required field missing" in e],

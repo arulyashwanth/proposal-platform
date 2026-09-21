@@ -79,12 +79,43 @@ export interface PricingOptimizationResult {
   currency?: string;
 }
 
+export interface HardwareMatchedSet {
+  id: number;
+  name: string;
+  door_type: string;
+  category: string;
+  specifications: string;
+  score: number;
+  match_pct: number;
+  is_exact_match: boolean;
+  reasons: string[];
+  component_hits: string[];
+}
+
+export interface CustomisationPlan {
+  add: string[];
+  remove: string[];
+  rationale: string;
+}
+
+export interface HardwareMatchResult {
+  exact_matches: HardwareMatchedSet[];
+  closest_match: HardwareMatchedSet | null;
+  customisation_plan: CustomisationPlan | null;
+  required_components: string[];
+  all_scored: HardwareMatchedSet[];
+  summary: string;
+  message?: string;
+}
+
 export interface ValidationRuleResult {
   project_type: string;
   valid: boolean;
   missing_required_fields: string[];
   rule_violations: string[];
   summary: string;
+  hardware_match?: HardwareMatchResult;
+  matched_hardware?: HardwareMatchedSet[];
 }
 
 export interface QuotationDraftResult {
@@ -258,5 +289,12 @@ export const api = {
     });
     if (!response.ok) throw new Error('Failed to export Excel');
     return await response.blob();
+  },
+
+  async matchHardwareSets(projectType: string, specifications: Record<string, any>): Promise<HardwareMatchResult | null> {
+    return fetchJson<HardwareMatchResult>('/api/hardware-sets/match', {
+      method: 'POST',
+      body: JSON.stringify({ project_type: projectType, specifications }),
+    });
   },
 };

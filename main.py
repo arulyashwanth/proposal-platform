@@ -22,11 +22,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from seed_mock_data import seed_database
 
 # Ensure all tables exist on startup and seed if empty
-models.Base.metadata.create_all(bind=engine)
 try:
+    models.Base.metadata.create_all(bind=engine)
     seed_database()
 except Exception as e:
-    print(f"Startup DB seeding notice: {e}")
+    print(f"[WARN] Startup DB init notice (server will still run): {e}")
 
 app = FastAPI(
     title="Mekatron — AI-Assisted Proposal Preparation System",
@@ -823,6 +823,23 @@ async def create_hardware_set(hw: HardwareSetCreate, db: Session = Depends(get_d
     db.commit()
     db.refresh(new_hw)
     return {"id": new_hw.id, "name": new_hw.name}
+
+
+class HardwareSetMatchRequest(BaseModel):
+    project_type: str
+    specifications: Dict[str, Any]
+
+
+@app.post("/api/hardware-sets/match", tags=["Hardware Library"])
+async def match_hardware_sets_endpoint(req: HardwareSetMatchRequest, db: Session = Depends(get_db)):
+    """
+    Score all hardware sets against project requirements and return:
+    - exact_matches (score >= 70): can be used as-is
+    - closest_match (best below 70): needs customisation
+    - customisation_plan: what components to add/remove
+    """
+    from hardware_set_matcher import match_hardware_sets
+    return match_hardware_sets(db, req.project_type, req.specifications)
 
 
 @app.get("/api/libraries/door-sets", tags=["Hardware Library"])
