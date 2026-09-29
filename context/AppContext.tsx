@@ -41,6 +41,31 @@ type Action =
   | { type: 'CONFIRM_ALL_REQUIREMENTS'; payload: { projectId: string } }
   | { type: 'COMPLETE_ANALYSIS'; payload: { projectId: string } }
   | { type: 'SELECT_DOOR_SET'; payload: { projectId: string; doorSetId: string; recommendationId: string } }
+  | {
+      type: 'SET_VERIFIED_HARDWARE_SELECTION';
+      payload: {
+        projectId: string;
+        hardwareSetId: string | number;
+        hardwareSetName: string;
+        doorCount: number;
+        components: Array<{
+          product_id?: number | string;
+          productId?: string;
+          product_name?: string;
+          productName?: string;
+          sku?: string;
+          productCode?: string;
+          category?: string;
+          quantity: number;
+          unit_price?: number;
+          unitPrice?: number;
+          supplier_id?: number | string;
+          supplier_name?: string;
+          supplierId?: string;
+          supplierName?: string;
+        }>;
+      };
+    }
   | { type: 'UPDATE_PRODUCT_QUANTITY'; payload: { projectId: string; productId: string; quantity: number } }
   | { type: 'REMOVE_PRODUCT'; payload: { projectId: string; productId: string } }
   | { type: 'APPROVE_PRICING'; payload: { projectId: string } }
@@ -164,7 +189,7 @@ function reducer(state: AppState, action: Action): AppState {
             supplierId: rp.supplierId,
             supplierName: rp.supplierName,
             unitPrice: rp.unitPrice,
-            currency: 'GBP',
+            currency: 'AED',
             availability: rp.availability,
             status: 'Included',
           }));
@@ -174,6 +199,50 @@ function reducer(state: AppState, action: Action): AppState {
           }));
           const updatedProject = { ...p, selectedDoorSetId: action.payload.doorSetId, selectedProducts: newProducts, recommendations: updatedRecs };
           return { ...updatedProject, pricing: recalcPricing(updatedProject), status: 'Pricing' as Project['status'], updatedAt: new Date().toISOString() };
+        }),
+      };
+    }
+
+    case 'SET_VERIFIED_HARDWARE_SELECTION': {
+      return {
+        ...state,
+        projects: state.projects.map((p) => {
+          if (p.id !== action.payload.projectId) return p;
+          const doorCount = action.payload.doorCount || p.estimatedDoorQuantity || 1;
+          const newProducts: SelectedProduct[] = action.payload.components.map((c, idx) => {
+            const pId = String(c.product_id || c.productId || idx + 1);
+            const pName = c.product_name || c.productName || `Product #${pId}`;
+            const pSku = c.sku || c.productCode || `SKU-${pId}`;
+            const unitPrice = Number(c.unit_price ?? c.unitPrice ?? 0);
+            const perDoorQty = c.quantity || 1;
+            const totalQty = perDoorQty * doorCount;
+            return {
+              productId: pId,
+              productCode: pSku,
+              productName: pName,
+              description: c.category ? `${c.category} - Verified Hardware Component` : 'Verified Hardware Component',
+              quantity: totalQty,
+              supplierId: String(c.supplier_id || c.supplierId || '1'),
+              supplierName: c.supplier_name || c.supplierName || 'Allegion (Schlage)',
+              unitPrice: unitPrice,
+              currency: 'AED',
+              availability: 'Available',
+              status: 'Included',
+            };
+          });
+
+          const updatedProject: Project = {
+            ...p,
+            selectedDoorSetId: String(action.payload.hardwareSetId),
+            estimatedDoorQuantity: doorCount,
+            selectedProducts: newProducts,
+            status: 'Pricing' as Project['status'],
+            updatedAt: new Date().toISOString(),
+          };
+          return {
+            ...updatedProject,
+            pricing: recalcPricing(updatedProject),
+          };
         }),
       };
     }

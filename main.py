@@ -100,6 +100,7 @@ class HardwareSetCreate(BaseModel):
     door_type: str
     specifications: Optional[str] = None
     category: str
+    components: Optional[List[Dict[str, Any]]] = None
 
 class DoorFormCreate(BaseModel):
     form_type: str
@@ -805,6 +806,7 @@ async def list_hardware_sets(
             "door_type": h.door_type,
             "category": h.category,
             "specifications": h.specifications,
+            "components": h.components or [],
         }
         for h in hw_sets
     ]
@@ -818,11 +820,19 @@ async def create_hardware_set(hw: HardwareSetCreate, db: Session = Depends(get_d
         door_type=hw.door_type,
         specifications=hw.specifications,
         category=hw.category,
+        components=hw.components or [],
     )
     db.add(new_hw)
     db.commit()
     db.refresh(new_hw)
-    return {"id": new_hw.id, "name": new_hw.name}
+    return {
+        "id": new_hw.id,
+        "name": new_hw.name,
+        "door_type": new_hw.door_type,
+        "category": new_hw.category,
+        "specifications": new_hw.specifications,
+        "components": new_hw.components or [],
+    }
 
 
 class HardwareSetMatchRequest(BaseModel):

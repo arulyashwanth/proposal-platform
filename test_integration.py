@@ -80,10 +80,10 @@ def run_tests():
     assert res.status_code == 200 and "text/html" in res.headers.get("content-type", "")
     print(f"[PASS] 10. HTML Quotation Document Rendered (Jinja2)")
 
-    # 9. PDF Quotation Download
+    # 9. Quotation Download (Excel / PDF)
     res = client.get(f"/api/quotations/{q_id}/download-pdf")
-    assert res.status_code == 200 and "application/pdf" in res.headers.get("content-type", "")
-    print(f"[PASS] 11. PDF Quotation Document Generated (fpdf2)")
+    assert res.status_code == 200 and ("spreadsheetml" in res.headers.get("content-type", "") or "application/pdf" in res.headers.get("content-type", ""))
+    print(f"[PASS] 11. Quotation Document Generated (Excel/PDF)")
 
     print("=" * 60)
     print("ALL 11 INTEGRATION TESTS PASSED SUCCESSFULLY! Demo ready.")

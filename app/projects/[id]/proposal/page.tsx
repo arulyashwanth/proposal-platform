@@ -58,7 +58,7 @@ export default function ProposalPreparationPage() {
         category: p.category || 'Hardware',
         quantity: p.quantity || 1,
         unit_price: p.unitPrice || 0,
-        subtotal: p.totalPrice || 0
+        subtotal: p.totalPrice || ((p.quantity || 1) * (p.unitPrice || 0))
       }));
 
       const cost_summary = {

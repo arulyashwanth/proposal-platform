@@ -79,12 +79,29 @@ export interface PricingOptimizationResult {
   currency?: string;
 }
 
+export interface HardwareComponentItem {
+  product_id?: number | string;
+  productId?: string;
+  product_name?: string;
+  productName?: string;
+  sku?: string;
+  productCode?: string;
+  category?: string;
+  quantity: number;
+  unit_price?: number;
+  unitPrice?: number;
+  action?: 'added' | 'existing';
+  supplier_id?: number | string;
+  supplier_name?: string;
+}
+
 export interface HardwareMatchedSet {
   id: number;
   name: string;
   door_type: string;
   category: string;
   specifications: string;
+  components?: HardwareComponentItem[];
   score: number;
   match_pct: number;
   is_exact_match: boolean;
@@ -95,6 +112,8 @@ export interface HardwareMatchedSet {
 export interface CustomisationPlan {
   add: string[];
   remove: string[];
+  added_products?: string[];
+  removed_products?: string[];
   rationale: string;
 }
 
@@ -102,6 +121,7 @@ export interface HardwareMatchResult {
   exact_matches: HardwareMatchedSet[];
   closest_match: HardwareMatchedSet | null;
   customisation_plan: CustomisationPlan | null;
+  proposed_components?: HardwareComponentItem[];
   required_components: string[];
   all_scored: HardwareMatchedSet[];
   summary: string;
@@ -228,6 +248,19 @@ export const api = {
 
   async getDoorSets(): Promise<{ door_forms: ApiDoorForm[]; count: number } | null> {
     return fetchJson<{ door_forms: ApiDoorForm[]; count: number }>('/api/libraries/door-sets');
+  },
+
+  async createHardwareSet(data: {
+    name: string;
+    door_type: string;
+    category: string;
+    specifications?: string;
+    components?: any[];
+  }): Promise<{ id: number; name: string; components?: any[] } | null> {
+    return fetchJson<{ id: number; name: string; components?: any[] }>('/api/hardware-sets', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   },
 
   // Enquiries / Projects

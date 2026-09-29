@@ -86,24 +86,44 @@ def seed_database(db: Session = None):
                 door_type="Main Entry",
                 specifications="Commercial Main Entry — mortise lock, closer, 3 hinges, panic bar",
                 category="Commercial",
+                components=[
+                    {"product_id": products[2].id, "product_name": products[2].name, "sku": products[2].sku, "category": products[2].category, "quantity": 1, "unit_price": float(products[2].base_price or 385.0)},
+                    {"product_id": products[4].id, "product_name": products[4].name, "sku": products[4].sku, "category": products[4].category, "quantity": 1, "unit_price": float(products[4].base_price or 210.0)},
+                    {"product_id": products[5].id, "product_name": products[5].name, "sku": products[5].sku, "category": products[5].category, "quantity": 3, "unit_price": float(products[5].base_price or 24.50)},
+                    {"product_id": products[7].id, "product_name": products[7].name, "sku": products[7].sku, "category": products[7].category, "quantity": 1, "unit_price": float(products[7].base_price or 295.0)},
+                ],
             ),
             models.HardwareSet(
                 name="HS-Commercial-Interior",
                 door_type="Interior",
                 specifications="Commercial Interior — lever set, 2 hinges, surface bolt",
                 category="Commercial",
+                components=[
+                    {"product_id": products[1].id, "product_name": products[1].name, "sku": products[1].sku, "category": products[1].category, "quantity": 1, "unit_price": float(products[1].base_price or 145.0)},
+                    {"product_id": products[5].id, "product_name": products[5].name, "sku": products[5].sku, "category": products[5].category, "quantity": 2, "unit_price": float(products[5].base_price or 24.50)},
+                    {"product_id": products[9].id, "product_name": products[9].name, "sku": products[9].sku, "category": products[9].category, "quantity": 1, "unit_price": float(products[9].base_price or 18.0)},
+                ],
             ),
             models.HardwareSet(
                 name="HS-Residential-FrontDoor",
                 door_type="Front Door",
                 specifications="Residential Front Door — deadbolt, lever, 3 hinges",
                 category="Residential",
+                components=[
+                    {"product_id": products[0].id, "product_name": products[0].name, "sku": products[0].sku, "category": products[0].category, "quantity": 1, "unit_price": float(products[0].base_price or 89.50)},
+                    {"product_id": products[1].id, "product_name": products[1].name, "sku": products[1].sku, "category": products[1].category, "quantity": 1, "unit_price": float(products[1].base_price or 145.0)},
+                    {"product_id": products[5].id, "product_name": products[5].name, "sku": products[5].sku, "category": products[5].category, "quantity": 3, "unit_price": float(products[5].base_price or 24.50)},
+                ],
             ),
             models.HardwareSet(
                 name="HS-Residential-Interior",
                 door_type="Interior",
                 specifications="Residential Interior — lever, 2 hinges",
                 category="Residential",
+                components=[
+                    {"product_id": products[1].id, "product_name": products[1].name, "sku": products[1].sku, "category": products[1].category, "quantity": 1, "unit_price": float(products[1].base_price or 145.0)},
+                    {"product_id": products[8].id, "product_name": products[8].name, "sku": products[8].sku, "category": products[8].category, "quantity": 2, "unit_price": float(products[8].base_price or 12.0)},
+                ],
             ),
         ]
         db.add_all(hw_sets)

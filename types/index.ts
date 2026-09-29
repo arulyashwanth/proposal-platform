@@ -242,10 +242,12 @@ export interface SelectedProduct {
   productCode: string;
   productName: string;
   description: string;
+  category?: string;
   quantity: number;
   supplierId: string;
   supplierName: string;
   unitPrice: number;
+  totalPrice?: number;
   currency: string;
   availability: string;
   status: 'Included' | 'Under Review' | 'Removed';

@@ -107,17 +107,23 @@ def sanitize(text: str) -> str:
 
 
 def generate_quotation_excel(
-    quotation_ref: str,
-    project_name: str,
-    client_name: str,
-    items: List[Dict[str, Any]],
-    cost_summary: Dict[str, Any],
+    quotation_ref: Optional[str] = None,
+    project_name: str = "Unnamed Project",
+    client_name: str = "Valued Client",
+    items: List[Dict[str, Any]] = None,
+    cost_summary: Dict[str, Any] = None,
     prepared_by: str = "Mekatron System",
     notes: Optional[str] = None,
+    quotation_id: Optional[Any] = None,
 ) -> Dict[str, str]:
     """
     Generate a professional Excel quotation with 4 sheets.
     """
+    if quotation_ref is None and quotation_id is not None:
+        quotation_ref = str(quotation_id)
+    quotation_ref = quotation_ref or "Q-DRAFT"
+    items = items or []
+    cost_summary = cost_summary or {}
     ensure_dirs()
     import time
     from openpyxl import Workbook

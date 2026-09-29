@@ -101,6 +101,7 @@ class HardwareSet(Base):
     door_type = Column(String(100))
     specifications = Column(Text)
     category = Column(String(100))
+    components = Column(JSON, nullable=True)
 
 
 class DoorFormsLibrary(Base):
