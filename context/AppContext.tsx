@@ -45,10 +45,10 @@ type Action =
       type: 'SET_VERIFIED_HARDWARE_SELECTION';
       payload: {
         projectId: string;
-        hardwareSetId: string | number;
-        hardwareSetName: string;
-        doorCount: number;
-        components: Array<{
+        hardwareSetId?: string | number;
+        hardwareSetName?: string;
+        doorCount?: number;
+        components?: Array<{
           product_id?: number | string;
           productId?: string;
           product_name?: string;
@@ -63,6 +63,13 @@ type Action =
           supplier_name?: string;
           supplierId?: string;
           supplierName?: string;
+        }>;
+        hardwareSets?: Array<{
+          id: string | number;
+          name: string;
+          doorType?: string;
+          doorCount: number;
+          components: Array<any>;
         }>;
       };
     }
@@ -208,33 +215,60 @@ function reducer(state: AppState, action: Action): AppState {
         ...state,
         projects: state.projects.map((p) => {
           if (p.id !== action.payload.projectId) return p;
-          const doorCount = action.payload.doorCount || p.estimatedDoorQuantity || 1;
-          const newProducts: SelectedProduct[] = action.payload.components.map((c, idx) => {
-            const pId = String(c.product_id || c.productId || idx + 1);
-            const pName = c.product_name || c.productName || `Product #${pId}`;
-            const pSku = c.sku || c.productCode || `SKU-${pId}`;
-            const unitPrice = Number(c.unit_price ?? c.unitPrice ?? 0);
-            const perDoorQty = c.quantity || 1;
-            const totalQty = perDoorQty * doorCount;
-            return {
-              productId: pId,
-              productCode: pSku,
-              productName: pName,
-              description: c.category ? `${c.category} - Verified Hardware Component` : 'Verified Hardware Component',
-              quantity: totalQty,
-              supplierId: String(c.supplier_id || c.supplierId || '1'),
-              supplierName: c.supplier_name || c.supplierName || 'Allegion (Schlage)',
-              unitPrice: unitPrice,
-              currency: 'AED',
-              availability: 'Available',
-              status: 'Included',
-            };
+
+          const sets = action.payload.hardwareSets && action.payload.hardwareSets.length > 0
+            ? action.payload.hardwareSets
+            : [
+                {
+                  id: action.payload.hardwareSetId || 'hs-custom',
+                  name: action.payload.hardwareSetName || 'Verified Hardware Set',
+                  doorType: 'Main Entry',
+                  doorCount: action.payload.doorCount || p.estimatedDoorQuantity || 1,
+                  components: action.payload.components || [],
+                },
+              ];
+
+          const totalProjectDoors = sets.reduce((sum, s) => sum + (s.doorCount || 0), 0);
+
+          // Build merged product list across all hardware sets
+          const productMap = new Map<string, SelectedProduct>();
+          sets.forEach((s) => {
+            const setCount = s.doorCount || 0;
+            s.components.forEach((c, idx) => {
+              const pId = String(c.product_id || c.productId || idx + 1);
+              const pName = c.product_name || c.productName || `Product #${pId}`;
+              const pSku = c.sku || c.productCode || `SKU-${pId}`;
+              const unitPrice = Number(c.unit_price ?? c.unitPrice ?? 0);
+              const perDoorQty = c.quantity || 1;
+              const setTotalQty = perDoorQty * setCount;
+
+              if (productMap.has(pId)) {
+                const existing = productMap.get(pId)!;
+                existing.quantity += setTotalQty;
+              } else {
+                productMap.set(pId, {
+                  productId: pId,
+                  productCode: pSku,
+                  productName: pName,
+                  description: c.category ? `${c.category} - Hardware Component` : 'Hardware Component',
+                  quantity: setTotalQty,
+                  supplierId: String(c.supplier_id || c.supplierId || '1'),
+                  supplierName: c.supplier_name || c.supplierName || 'Allegion (Schlage)',
+                  unitPrice: unitPrice,
+                  currency: 'AED',
+                  availability: 'Available',
+                  status: 'Included',
+                });
+              }
+            });
           });
+
+          const newProducts = Array.from(productMap.values());
 
           const updatedProject: Project = {
             ...p,
-            selectedDoorSetId: String(action.payload.hardwareSetId),
-            estimatedDoorQuantity: doorCount,
+            selectedDoorSetId: String(sets[0]?.id || 'hs-custom'),
+            estimatedDoorQuantity: totalProjectDoors,
             selectedProducts: newProducts,
             status: 'Pricing' as Project['status'],
             updatedAt: new Date().toISOString(),

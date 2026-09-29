@@ -33,6 +33,7 @@ export interface ApiHardwareSet {
   door_type: string;
   category: string;
   specifications: string | null;
+  components?: any[];
 }
 
 export interface ApiDoorForm {
