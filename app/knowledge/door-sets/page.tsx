@@ -18,24 +18,31 @@ export default function DoorSetLibraryPage() {
     async function loadDoorSets() {
       const hwSets = await api.getHardwareSets();
       if (hwSets && hwSets.length > 0) {
-        const mapped: DoorSet[] = hwSets.map((hw, idx) => ({
-          id: `ds-${hw.id}`,
-          code: `DS-00${hw.id}`,
-          name: hw.name,
-          description: hw.specifications || 'Standard architectural commercial door assembly.',
-          projectTypes: [hw.category as any || 'Commercial'],
-          doorType: (hw.door_type === 'Main Entry' ? 'External' : 'Internal') as any,
-          fireRating: idx % 2 === 0 ? '120 min' : '60 min',
-          securityLevel: idx === 0 ? 'High' : 'Standard',
-          finish: 'Satin Stainless Steel',
-          status: 'Approved',
-          basePrice: 1250.0 + idx * 300.0,
-          currency: 'AED',
-          products: ['1', '2', '3'],
-          supplierId: '1',
-          supplierName: 'Allegion (Schlage)',
-          lastUpdated: new Date().toISOString().split('T')[0],
-        }));
+        const mapped: DoorSet[] = hwSets.map((hw, idx) => {
+          const comps = hw.components || [];
+          const compPrice = comps.reduce(
+            (sum: number, c: any) => sum + (Number(c.quantity || 1) * Number(c.unit_price || c.unitPrice || 0)),
+            0
+          );
+          return {
+            id: `ds-${hw.id}`,
+            code: `DS-00${hw.id}`,
+            name: hw.name,
+            description: hw.specifications || 'Standard architectural commercial door assembly.',
+            projectTypes: [hw.category as any || 'Commercial'],
+            doorType: (hw.door_type === 'Main Entry' ? 'External' : 'Internal') as any,
+            fireRating: idx % 2 === 0 ? '120 min' : '60 min',
+            securityLevel: idx === 0 ? 'High' : 'Standard',
+            finish: 'Satin Stainless Steel',
+            status: 'Approved',
+            basePrice: compPrice > 0 ? compPrice : 1250.0 + idx * 300.0,
+            currency: 'AED',
+            products: comps.length > 0 ? comps.map((c: any) => String(c.product_id || c.productId || '1')) : ['1', '2', '3'],
+            supplierId: '1',
+            supplierName: hw.category === 'Commercial' ? 'Allegion / ASSA ABLOY' : 'Allegion (Schlage)',
+            lastUpdated: new Date().toISOString().split('T')[0],
+          };
+        });
         setDoorSets(mapped);
         setBackendSynced(true);
       }

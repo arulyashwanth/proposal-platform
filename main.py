@@ -24,6 +24,13 @@ from seed_mock_data import seed_database
 # Ensure all tables exist on startup and seed if empty
 try:
     models.Base.metadata.create_all(bind=engine)
+    with engine.connect() as conn:
+        try:
+            from sqlalchemy import text
+            conn.execute(text("ALTER TABLE hardware_sets ADD COLUMN IF NOT EXISTS components JSONB;"))
+            conn.commit()
+        except Exception:
+            pass
     seed_database()
 except Exception as e:
     print(f"[WARN] Startup DB init notice (server will still run): {e}")

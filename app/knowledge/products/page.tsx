@@ -35,7 +35,13 @@ export default function ProductLibraryPage() {
           category: p.category,
           description: `${p.name} — High-spec architectural hardware certified for commercial use.`,
           supplierId: String(p.supplier_id || '1'),
-          supplierName: p.supplier_name || 'Allegion (Schlage)',
+          supplierName:
+            p.supplier_name ||
+            (p.supplier_id === 2
+              ? 'ASSA ABLOY'
+              : p.supplier_id === 3
+              ? 'DORMA Gulf'
+              : 'Allegion (Schlage)'),
           unitPrice: p.base_price,
           currency: 'AED',
           availability: 'Available',
@@ -44,7 +50,7 @@ export default function ProductLibraryPage() {
           lastUpdated: new Date().toISOString().split('T')[0],
         }));
         setProducts(mapped);
-        setBackendSource('FastAPI Database');
+        setBackendSource('Supabase Cloud Database');
       }
     }
     loadProducts();

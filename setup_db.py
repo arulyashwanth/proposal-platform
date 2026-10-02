@@ -47,14 +47,22 @@ def setup_database():
                 bidding_status VARCHAR(50)
             );""",
 
+            """CREATE TABLE IF NOT EXISTS suppliers (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(255),
+                contact VARCHAR(255)
+            );""",
+
             # 2. PRODUCT CATALOG TABLES
             """CREATE TABLE IF NOT EXISTS hardware_sets (
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(255),
                 door_type VARCHAR(100),
                 specifications TEXT,
-                category VARCHAR(100)
+                category VARCHAR(100),
+                components JSONB
             );""",
+            """ALTER TABLE hardware_sets ADD COLUMN IF NOT EXISTS components JSONB;""",
             """CREATE TABLE IF NOT EXISTS products (
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(255),

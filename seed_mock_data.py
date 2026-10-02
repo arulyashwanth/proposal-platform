@@ -125,6 +125,17 @@ def seed_database(db: Session = None):
                     {"product_id": products[8].id, "product_name": products[8].name, "sku": products[8].sku, "category": products[8].category, "quantity": 2, "unit_price": float(products[8].base_price or 12.0)},
                 ],
             ),
+            models.HardwareSet(
+                name="HS-Commercial-MainEntry (Custom Variant)",
+                door_type="Main Entry",
+                specifications="Customized hardware set for King's College Hospital Dubai Hills requirements.",
+                category="Commercial",
+                components=[
+                    {"product_id": products[4].id, "product_name": products[4].name, "sku": products[4].sku, "category": products[4].category, "quantity": 1, "unit_price": float(products[4].base_price or 210.0)},
+                    {"product_id": products[7].id, "product_name": products[7].name, "sku": products[7].sku, "category": products[7].category, "quantity": 1, "unit_price": float(products[7].base_price or 295.0)},
+                    {"product_id": products[1].id, "product_name": products[1].name, "sku": products[1].sku, "category": products[1].category, "quantity": 1, "unit_price": float(products[1].base_price or 145.0)},
+                ],
+            ),
         ]
         db.add_all(hw_sets)
         db.commit()
